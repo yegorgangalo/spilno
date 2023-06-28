@@ -263,6 +263,7 @@ export default function SignUp() {
                       onChange={onChange}
                       value={value ?? ''}
                       label="Стать*"
+                      error={errors.childGender}
                     />
                   )}
                 />
