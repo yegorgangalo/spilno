@@ -2,11 +2,6 @@
 import { useRouter } from 'next/navigation'
 
 import * as React from 'react'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
@@ -19,48 +14,12 @@ import Container from '@mui/material/Container'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateField } from '@mui/x-date-pickers/DateField'
-// import { decode } from '@/services/common'
-// import { encode, decode } from 'string-encode-decode'
 import { encode } from 'js-base64'
+import BasicSelect from '@/components/BasicSelect'
 
-// const encode = (data: object) => {
-//   return Buffer.from(JSON.stringify(data)).toString('base64')
-// }
-
-enum genderType {
-  MALE = 'Male',
-  FEMALE = 'Female',
-}
-
-interface BasicSelectProps {
-  name?: string,
-}
-
-const BasicSelect = ({ name }: BasicSelectProps) => {
-  const [gender, setGender] = React.useState('')
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setGender(event.target.value as string)
-  }
-
-  return (
-    <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
-        <InputLabel id="gender">Gender</InputLabel>
-        <Select
-          labelId="gender"
-          id="gender"
-          value={gender}
-          label="Gender"
-          onChange={handleChange}
-          name={name}
-        >
-          <MenuItem value={genderType.FEMALE}>{genderType.FEMALE}</MenuItem>
-          <MenuItem value={genderType.MALE}>{genderType.MALE}</MenuItem>
-        </Select>
-      </FormControl>
-    </Box>
-  )
+enum GENDER {
+  MALE = 'жін',
+  FEMALE = 'чол',
 }
 
 export default function SignUp() {
@@ -123,6 +82,7 @@ export default function SignUp() {
                   id="parentPhone"
                   label="Phone number"
                   name="parentPhone"
+                  required
                 />
               </Grid>
               <Grid item xs={12}>
@@ -168,11 +128,11 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateField label="Basic date field" id="childDob" name="childDob" />
+                  <DateField label="Date of birth" id="childDob" name="childDob" />
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <BasicSelect name="childGender"/>
+                <BasicSelect name="childGender" menuItems={[GENDER.MALE, GENDER.FEMALE]} label='Gender' />
               </Grid>
 
               <Grid item xs={12}>

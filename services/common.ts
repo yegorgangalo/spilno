@@ -14,10 +14,18 @@ export const isFakeEmail = (email: string) => {
     return email.match(/fake_\d{10,}_.*@spilno\.com/) !== null;
 }
 
-export const decode = (data: object) => {
-    return Buffer.from(JSON.stringify(data)).toString('base64')
-}
+export const fetcher = (url: string, options: object) => {
+    return fetch(url ,options).then((res) => {
+      if (!res.ok) {
+        return Promise.reject({
+          status: res.status,
+          message: `Response is not ok. ${res.statusText}`,
+        })
+      }
+      return res.json()
+    })
+  }
 
-export const encode = (string: string) => {
-    return Buffer.from(string, 'base64').toString('ascii')
+export const isEmptyObject = (obj: object) => {
+  return typeof obj === 'object' && !Object.keys(obj).length
 }

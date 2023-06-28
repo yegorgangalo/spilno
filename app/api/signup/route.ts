@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { generateFakeEmail, createPassword } from '@/services/common'
+import { ROLE } from '@/services/const'
 
 const prisma = new PrismaClient()
-
-enum ROLES {
-    ADMIN = 'admin',
-    MANAGER = 'manager',
-    PARENT = 'parent',
-    CHILD = 'child',
-
-}
 
 interface Parent {
     id: number,
@@ -50,14 +43,14 @@ export async function POST(req: Request) {
     parentAccount = await ctx.account.findFirst({
         where: {
             email: body.parentEmail,
-            role: ROLES.PARENT,
+            role: ROLE.PARENT,
         }
     })
 
     childAccount = await ctx.account.findFirst({
         where: {
             email: childFakeEmail,
-            role: ROLES.CHILD,
+            role: ROLE.CHILD,
         }
     })
 
@@ -66,7 +59,7 @@ export async function POST(req: Request) {
             data: {
                 email: childFakeEmail,
                 password: await createPassword(),
-                role: ROLES.CHILD,
+                role: ROLE.CHILD,
             }
         })
 
@@ -94,7 +87,7 @@ export async function POST(req: Request) {
             data: {
                 email: body.parentEmail,
                 password: await createPassword(),
-                role: ROLES.PARENT,
+                role: ROLE.PARENT,
             }
         })
 
@@ -116,18 +109,15 @@ export async function POST(req: Request) {
         })
     }
 
-    const currentParentChildRelative = await ctx.parentChildRelative.findFirst({
+    const currentParentChildRelation = await ctx.parentChildRelation.findFirst({
         where: {
             parentId: (parent as Parent).id,
             childId: (child as Child).id,
         }
     })
 
-    console.log('currentParentChildRelative=', currentParentChildRelative);
-
-
-    if (!currentParentChildRelative) {
-        await ctx.parentChildRelative.create({
+    if (!currentParentChildRelation) {
+        await ctx.parentChildRelation.create({
             data: {
                 parentId: (parent as Parent).id,
                 childId: (child as Child).id,

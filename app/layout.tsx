@@ -1,8 +1,7 @@
 'use client'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const defaultTheme = createTheme();
+const defaultTheme = createTheme()
 
 // export const metadata = {
 //   title: 'Spilno',
