@@ -43,7 +43,7 @@ const isEmptyObject = (obj: object) => {
   return typeof obj === 'object' && !Object.keys(obj).length
 }
 
-export interface IRegisterCourseData {
+interface IRegisterCourseData {
   title: string
   content?: string
   lowerAgeLimit?: string
