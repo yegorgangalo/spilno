@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 import { useForm, Controller } from 'react-hook-form'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
@@ -27,17 +27,17 @@ const style = {
 
 const ageList = [...Array(17 + 1).keys()].map(k => String(k)).slice(1)
 
-const fetcher = (url: string, options: object) => {
-  return fetch(url ,options).then((res) => {
-    if (!res.ok) {
-      return Promise.reject({
-        status: res.status,
-        message: `Response is not ok. ${res.statusText}`,
-      })
-    }
-    return res.json()
-  })
-}
+// const fetcher = (url: string, options: object) => {
+//   return fetch(url ,options).then((res) => {
+//     if (!res.ok) {
+//       return Promise.reject({
+//         status: res.status,
+//         message: `Response is not ok. ${res.statusText}`,
+//       })
+//     }
+//     return res.json()
+//   })
+// }
 
 const isEmptyObject = (obj: object) => {
   return typeof obj === 'object' && !Object.keys(obj).length
@@ -57,7 +57,19 @@ const schema = yup.object().shape({
   upperAgeLimit: yup.string(),
 }).required()
 
-const ManageCourses = () => {
+interface Course {
+  id: number,
+  title: string,
+  content: string,
+  lowerAgeLimit: number,
+  upperAgeLimit: number,
+}
+
+interface IAdminCoursesProps {
+  courses: Course[]
+}
+
+const AdminCourses = ({ courses }: IAdminCoursesProps) => {
   const { mutate } = useSWRConfig()
   const { control, handleSubmit, reset, formState: { errors } } = useForm<IRegisterCourseData>({
     defaultValues: {
@@ -79,8 +91,8 @@ const ManageCourses = () => {
     reset()
   }
 
-  const { data, error, isLoading } = useSWR('/api/course', fetcher)
-  const courses = data?.data
+  // const { data, error, isLoading } = useSWR('/api/course', fetcher)
+  // const courses = data?.data
 
   const onSubmit = async (data: IRegisterCourseData) => {
     console.log(data)
@@ -178,7 +190,7 @@ const ManageCourses = () => {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Add course
+                Додати курс
               </Button>
             </Box>
           </Modal>
@@ -186,4 +198,4 @@ const ManageCourses = () => {
   )
 }
 
-export default  ManageCourses
+export default  AdminCourses

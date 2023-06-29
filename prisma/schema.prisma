@@ -1,5 +1,5 @@
 //npx prisma generate
-// npx prisma migrate dev --name init
+//npx prisma migrate dev --name init
 //CMD+SHIFT+P developer -> restart window
 //remove node_modules and npm install
 
@@ -68,8 +68,8 @@ model Course {
   id                  Int                   @id @default(autoincrement())
   title               String                @unique
   content             String?
-  lowerAgeLimit       Int?
-  upperAgeLimit       Int?
+  lowerAgeLimit       String?
+  upperAgeLimit       String?
   createdAt           DateTime              @default(now())
   courseChildRelation CourseChildRelation[]
 }
@@ -102,6 +102,7 @@ model Manager {
   firstName String
   lastName  String
   phone     String
+  isActive  Boolean
   account   Account  @relation(fields: [accountId], references: [id])
   accountId Int      @unique
   createdAt DateTime @default(now())

@@ -50,8 +50,8 @@ CREATE TABLE `Course` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NULL,
-    `lowerAgeLimit` INTEGER NULL,
-    `upperAgeLimit` INTEGER NULL,
+    `lowerAgeLimit` VARCHAR(191) NULL,
+    `upperAgeLimit` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Course_title_key`(`title`),
@@ -87,6 +87,7 @@ CREATE TABLE `Manager` (
     `firstName` VARCHAR(191) NOT NULL,
     `lastName` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
+    `isActive` BOOLEAN NOT NULL,
     `accountId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 

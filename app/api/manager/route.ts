@@ -5,6 +5,27 @@ import { ROLE } from '@/services/const'
 
 const prisma = new PrismaClient()
 
+export async function PATCH(req: Request) {
+    try {
+        const body = await req.json()
+        console.log('UPDATE manager body:', body);
+
+        const updatedManager = await prisma.manager.update({
+            where: {
+                id: body.id
+            },
+            data: {
+                isActive: body.isActive,
+            }
+        })
+
+        console.log('PATCH result:', updatedManager);
+        return NextResponse.json({ data: updatedManager, success: true })
+    } catch (error) {
+        return NextResponse.json({ error, success: false })
+    }
+}
+
 export async function POST(req: Request) {
     const body = await req.json()
     console.log('POST manager body:', body);
@@ -23,6 +44,7 @@ export async function POST(req: Request) {
                 firstName: body.firstName,
                 lastName: body.lastName,
                 phone: body.phone,
+                isActive: true,
                 accountId: managerAccount.id,
             }
         })
@@ -39,9 +61,19 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-    console.log('get managers start');
-
-    const managers = await prisma.manager.findMany()
-    console.log('get managers result:', managers);
-    return NextResponse.json({ data: managers })
+    const managers = await prisma.manager.findMany({
+        include: {
+            account: true
+        }
+    })
+    console.log('get managers result:', managers)
+    const normalizedData = managers.map(manager => ({
+        id: manager.id,
+        firstName: manager.firstName,
+        lastName: manager.lastName,
+        phone: manager.phone,
+        email: manager.account.email,
+        isActive: manager.isActive,
+    }))
+    return NextResponse.json({ data: normalizedData })
 }
