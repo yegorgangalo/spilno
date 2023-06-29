@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { createPassword } from '@/services/common'
+import { bcryptPassword } from '@/services/common'
 import { ROLE } from '@/services/const'
 
 const prisma = new PrismaClient()
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         const managerAccount = await ctx.account.create({
             data: {
                 email: body.email,
-                password: await createPassword(),
+                password: await bcryptPassword(body.password),
                 role: ROLE.MANAGER,
             }
         })

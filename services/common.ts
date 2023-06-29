@@ -1,8 +1,18 @@
 import shortid from 'shortid'
 import * as bcrypt from 'bcrypt'
 
+const SALT_ROUNDS = 6
+
 export const createPassword = () => {
-    return bcrypt.hash(shortid.generate(), 6)
+  return bcrypt.hash(shortid.generate(), SALT_ROUNDS)
+}
+
+export const bcryptPassword = (password: string) => {
+  return bcrypt.hash(password, SALT_ROUNDS)
+}
+
+export const comparePasswords = (requestPassword: string, dbPassword: string) => {
+  return bcrypt.compare(requestPassword, dbPassword)
 }
 
 export const generateFakeEmail = (name: string) => {

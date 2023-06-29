@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -80,9 +80,6 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
     setOpen(false)
     reset()
   }
-
-  // const { data, error, isLoading } = useSWR<IResponseData>('/api/manager', fetcher)
-  // const managers = data?.data
 
   const onSubmit = async (data: IRegisterManagerData) => {
     console.log(data)
