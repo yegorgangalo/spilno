@@ -6,19 +6,23 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Box from '@mui/material/Box'
 
+interface ImenuItem {
+  id: string | number
+  title: string
+}
 interface BasicSelectProps {
     name: string,
     label: string,
     required?: boolean,
-    menuItems: string[],
-    value: string,
-    onChange: (value: string) => void,
+    menuItems: ImenuItem[],
+    value: string | number | null,
+    onChange: (value: string | number) => void,
     error?: boolean,
   }
 
 const BasicSelect = ({ name, label, required = false, menuItems, value, onChange, error }: BasicSelectProps) => {
     const handleChange = (event: SelectChangeEvent) => {
-        onChange(event.target.value as string)
+        onChange(event.target.value as string | number)
     }
 
     return (
@@ -33,7 +37,7 @@ const BasicSelect = ({ name, label, required = false, menuItems, value, onChange
             name={name}
             required={required}
           >
-            {menuItems.map(item => <MenuItem key={item} value={item}>{item}</MenuItem>)}
+            {menuItems.map(i => <MenuItem key={i.id} value={i.id}>{i.title}</MenuItem>)}
           </Select>
           {error ? <FormHelperText>Required field</FormHelperText> : null}
         </FormControl>

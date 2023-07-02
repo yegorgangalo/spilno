@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { generateFakeEmail, createPassword } from '@/services/common'
 import { ROLE } from '@/services/const'
-
-const prisma = new PrismaClient()
 
 interface Parent {
     id: number,

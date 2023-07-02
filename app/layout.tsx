@@ -1,5 +1,8 @@
 'use client'
+
+import './globals.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { SessionProvider } from 'next-auth/react'
 
 const defaultTheme = createTheme()
 
@@ -14,10 +17,12 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <html lang="en">
-        <body suppressHydrationWarning={true}>{children}</body>
-      </html>
-    </ThemeProvider>
+    <SessionProvider>
+      <ThemeProvider theme={defaultTheme}>
+        <html lang='en'>
+          <body suppressHydrationWarning={true}>{children}</body>
+        </html>
+      </ThemeProvider>
+    </SessionProvider>
   )
 }

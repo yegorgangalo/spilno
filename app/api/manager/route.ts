@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { bcryptPassword } from '@/services/common'
 import { ROLE } from '@/services/const'
-
-const prisma = new PrismaClient()
+import { verifyJwtAuth } from '@/lib/jwt'
 
 export async function PATCH(req: Request) {
     try {
@@ -60,13 +59,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ data: transaction.data })
 }
 
-export async function GET(req: Request) {
+export const GET = (req: Request) => verifyJwtAuth(req, async () => {
     const managers = await prisma.manager.findMany({
         include: {
-            account: true
+            account: {
+                select: {
+                    email: true,
+                }
+            }
         }
     })
-    console.log('get managers result:', managers)
     const normalizedData = managers.map(manager => ({
         id: manager.id,
         firstName: manager.firstName,
@@ -76,4 +78,4 @@ export async function GET(req: Request) {
         isActive: manager.isActive,
     }))
     return NextResponse.json({ data: normalizedData })
-}
+})

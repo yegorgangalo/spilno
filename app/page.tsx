@@ -70,26 +70,23 @@ export default function SignUp() {
       childCity: '',
       childDob: '',
       childGender: '',
-      childAllowPhoto: '',
-      terms: '',
+      childAllowPhoto: 'true',
+      terms: 'true',
     },
     resolver: yupResolver<ISignUpData>(signUpSchema),
   })
 
-  console.log('errors=', errors);
-
   const onSubmit = async (data: ISignUpData) => {
-    console.log('data:', data)
     if (!isEmptyObject(errors)) {
       return
     }
     const response = await fetch('/api/signup', { body: JSON.stringify(data), method: 'POST' })
     const signupResult = await response.json()
     const encodedData = encodeURIComponent(encode(JSON.stringify(signupResult.data)))
-    console.log('handleSubmit encodedData=', encodedData)
-
     router.push(`/qrcode/${encodedData}`)
   }
+
+  const genderList = [{ id: GENDER.MALE, title: GENDER.MALE }, { id: GENDER.FEMALE, title: GENDER.FEMALE }]
 
   return (
       <Container component="main" maxWidth="xs">
@@ -257,8 +254,8 @@ export default function SignUp() {
                   render={({ field: { onChange, value } }) => (
                     <BasicSelect
                       name="childGender"
-                      menuItems={[GENDER.MALE, GENDER.FEMALE]}
-                      onChange={onChange}
+                      menuItems={genderList}
+                      onChange={(id) => onChange(String(id))}
                       value={value ?? ''}
                       label="Стать*"
                       error={!!errors.childGender}

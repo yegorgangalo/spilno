@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { useSWRConfig } from 'swr'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -12,6 +11,8 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import PasswordTextField from '@/components/PasswordTextField'
+import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const isEmptyObject = (obj: object) => {
   return typeof obj === 'object' && !Object.keys(obj).length
@@ -28,7 +29,10 @@ const schema = yup.object().shape({
 }).required()
 
 const SignInPage = () => {
-  const { mutate } = useSWRConfig()
+  const router = useRouter()
+  const { data: session } = useSession()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/manage/child-course'
   const { control, handleSubmit, reset, formState: { errors } } = useForm<ISigninManagerData>({
     defaultValues: {
       email: '',
@@ -37,22 +41,33 @@ const SignInPage = () => {
     resolver: yupResolver<ISigninManagerData>(schema),
   })
 
-  console.log('errors=', errors);
+  React.useEffect(() => {
+    if (session?.user && !searchParams.has('message')) {
+      router.push('/manage/child-course')
+    }
+  }, [router, searchParams, session])
 
   const onSubmit = async (data: ISigninManagerData) => {
     console.log(data)
     if (!isEmptyObject(errors)) {
       return
     }
-    const response = await fetch('/api/signin', { body: JSON.stringify(data), method: 'POST' })
-    const signinResult = await response.json()
+
+    const signinResult = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: true,
+      callbackUrl
+    });
+
     console.log('signinResult=', signinResult);
 
-    if (signinResult) {
-      mutate('/api/signin')
-      reset()
+    if (!signinResult?.ok) {
+      console.log('error signin', signinResult);
     }
   }
+
+  const showNoAccessMessage = searchParams.get('message') === 'noaccess'
 
   return (
     <Container component="main" maxWidth="xs">
@@ -67,6 +82,7 @@ const SignInPage = () => {
           <Typography component="h1" variant="h5">
             Spilno
           </Typography>
+          {showNoAccessMessage && <Typography component="h6" variant="h6">Авторизуйтесь</Typography>}
             <Box id='courseForm' component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>

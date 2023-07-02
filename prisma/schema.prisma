@@ -2,6 +2,7 @@
 //npx prisma migrate dev --name init
 //CMD+SHIFT+P developer -> restart window
 //remove node_modules and npm install
+//npx prisma studio
 
 generator client {
   provider = "prisma-client-js"
@@ -94,7 +95,7 @@ model CourseChildRelation {
   visitTime DateTime
   createdAt DateTime @default(now())
 
-  @@unique([courseId, childId])
+  // @@unique([courseId, childId])
 }
 
 model Manager {

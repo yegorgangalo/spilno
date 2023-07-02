@@ -6,10 +6,6 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
-// const decode = (string: string) => {
-//     return Buffer.from(string, 'base64').toString('utf8')
-// }
-
 interface QrCodeProps {
     params: { hash: string }
 }
@@ -21,8 +17,8 @@ const QrCode = (props: QrCodeProps) => {
     console.log('pathname=', { decodedData})
     const { firstName, lastName } = decodedData.child
 
-    // const manageChildUrl = `${location.origin}/manage-child/${encodedData}`
-    const manageChildUrl = `http://192.168.1.6:3000/manage-child/${encodedData}`
+    const manageChildCourseUrl = `${location.origin}/manage/child-course/${encodedData}`
+    // const manageChildCourseUrl = `http://192.168.1.6:3000/manage/child-course/${encodedData}`
 
     return (
         <Container component="main" maxWidth="xs">
@@ -37,8 +33,8 @@ const QrCode = (props: QrCodeProps) => {
                 <Typography component="h1" variant="h5">
                   QrCode for {`${firstName} ${lastName}`}
                 </Typography>
-                <QRCodeCanvas value={manageChildUrl} size={512} />
-                <Link href={`/manage-child/${encodedData}`}>manage-child/</Link>
+                <QRCodeCanvas value={manageChildCourseUrl} size={512} />
+                <Link href={`/manage/child-course/${encodedData}`}>manage/child-course/</Link>
             </Box>
         </Container>
     )

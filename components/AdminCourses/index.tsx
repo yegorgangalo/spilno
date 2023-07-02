@@ -25,19 +25,7 @@ const style = {
   p: 4,
 }
 
-const ageList = [...Array(17 + 1).keys()].map(k => String(k)).slice(1)
-
-// const fetcher = (url: string, options: object) => {
-//   return fetch(url ,options).then((res) => {
-//     if (!res.ok) {
-//       return Promise.reject({
-//         status: res.status,
-//         message: `Response is not ok. ${res.statusText}`,
-//       })
-//     }
-//     return res.json()
-//   })
-// }
+const ageList = [...Array(17 + 1).keys()].map(k => ({ id: String(k), title: String(k)})).slice(1)
 
 const isEmptyObject = (obj: object) => {
   return typeof obj === 'object' && !Object.keys(obj).length
@@ -81,18 +69,12 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
     resolver: yupResolver<IRegisterCourseData>(schema),
   })
 
-  console.log('errors=', errors);
-
-
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     reset()
   }
-
-  // const { data, error, isLoading } = useSWR('/api/course', fetcher)
-  // const courses = data?.data
 
   const onSubmit = async (data: IRegisterCourseData) => {
     console.log(data)
@@ -161,7 +143,7 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
                       <BasicSelect
                         name="lowerAgeLimit"
                         menuItems={ageList}
-                        onChange={onChange}
+                        onChange={(id) => onChange(String(id))}
                         value={value!}
                         label="Мінімальний вік"
                       />
@@ -176,7 +158,7 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
                       <BasicSelect
                         name="upperAgeLimit"
                         menuItems={ageList}
-                        onChange={onChange}
+                        onChange={(id) => onChange(String(id))}
                         value={value!}
                         label="Максимальний вік"
                       />

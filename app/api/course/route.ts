@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
+import { verifyJwtAuth } from '@/lib/jwt'
 
 export async function POST(req: Request) {
     const body = await req.json()
@@ -19,10 +18,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ data: course })
 }
 
-export async function GET(req: Request) {
-    console.log('get courses start');
-
+export const GET = (req: Request) => verifyJwtAuth(req, async () => {
     const courses = await prisma.course.findMany()
-    console.log('get courses result:', courses);
     return NextResponse.json({ data: courses })
-}
+})
