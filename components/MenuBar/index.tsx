@@ -27,7 +27,7 @@ const menuItems = [
 const MenuBar = () => {
   const pathname = usePathname()
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
 
@@ -82,9 +82,6 @@ const MenuBar = () => {
             }}
             open={Boolean(anchorElNav)}
             onClose={handleCloseNavMenu}
-            sx={{
-              display: { xs: 'block', md: 'none' },
-            }}
           >
             {availableMenuItems.map(({ name, route }) => (
               <MenuItem key={route} onClick={onClickMenuItem({ route })}>

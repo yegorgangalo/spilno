@@ -71,9 +71,6 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
     resolver: yupResolver<IRegisterManagerData>(schema),
   })
 
-  console.log('errors=', errors);
-
-
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => {

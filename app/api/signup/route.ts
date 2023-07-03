@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server'
+import { encode } from 'js-base64'
+import QRCode from 'qrcode'
 import { prisma } from '@/lib/prisma'
 import { generateFakeEmail, createPassword } from '@/services/common'
 import { ROLE } from '@/services/const'
+import { sendMail } from '@/services/mailService'
 
 interface Parent {
-    id: number,
+    id       : number,
     firstName: string,
     lastName : string,
     phone    : string,
@@ -15,119 +18,153 @@ interface Parent {
 }
 
 interface Child {
-    id: number,
-    firstName: string,
-    lastName : string,
-    dob      : string,
-    gender   : string,
-    city     : string,
+    id        : number,
+    firstName : string,
+    lastName  : string,
+    dob       : string,
+    gender    : string,
+    city      : string,
     allowPhoto: boolean,
-    accountId: number,
-    createdAt: Date,
+    accountId : number,
+    createdAt : Date,
 }
 
 export async function POST(req: Request) {
+  try {
     const body = await req.json()
     console.log(body);
 
     const transaction = await prisma.$transaction(async (ctx) => {
-    let parentAccount = null
-    let parent: Parent | null = null
-    let childAccount = null
-    let child: Child | null = null
+        let parentAccount = null
+        let parent: Parent | null = null
+        let childAccount = null
+        let child: Child | null = null
 
-    const childFakeEmail = generateFakeEmail(`${body.childFirstName} ${body.childLastName}`)
+        const childFakeEmail = generateFakeEmail(`${body.childFirstName} ${body.childLastName}`)
 
-    parentAccount = await ctx.account.findFirst({
-        where: {
-            email: body.parentEmail,
-            role: ROLE.PARENT,
-        }
-    })
-
-    childAccount = await ctx.account.findFirst({
-        where: {
-            email: childFakeEmail,
-            role: ROLE.CHILD,
-        }
-    })
-
-    if (!childAccount) {
-        childAccount = await ctx.account.create({
-            data: {
-                email: childFakeEmail,
-                password: await createPassword(),
-                role: ROLE.CHILD,
-            }
-        })
-
-        child = await ctx.child.create({
-            data: {
-              firstName: body.childFirstName,
-              lastName: body.childLastName,
-              dob: body.childDob,
-              gender: body.childGender,
-              city: body.childCity,
-              allowPhoto: !!body.childAllowPhoto,
-              accountId: childAccount.id,
-            },
-        })
-    } else {
-        child = await ctx.child.findFirst({
+        //-------parent start--------
+        parentAccount = await ctx.account.findFirst({
             where: {
-                accountId: childAccount.id,
-            }
-        })
-    }
-
-    if (!parentAccount) {
-        parentAccount = await ctx.account.create({
-            data: {
                 email: body.parentEmail,
-                password: await createPassword(),
                 role: ROLE.PARENT,
             }
         })
 
-        parent = await ctx.parent.create({
-            data: {
-              firstName: body.parentFirstName,
-              lastName: body.parentLastName,
-              phone: body.parentPhone,
-              messenger: 'any',
-              terms: !!body.terms as boolean,
-              accountId: parentAccount.id,
-            },
-          })
-    } else {
-        parent = await ctx.parent.findFirst({
+        if (!parentAccount) {
+            parentAccount = await ctx.account.create({
+                data: {
+                    email: body.parentEmail,
+                    password: await createPassword(),
+                    role: ROLE.PARENT,
+                }
+            })
+
+            parent = await ctx.parent.create({
+                data: {
+                  firstName: body.parentFirstName,
+                  lastName: body.parentLastName,
+                  phone: body.parentPhone,
+                  messenger: 'any',
+                  terms: body.terms,
+                  accountId: parentAccount.id,
+                },
+              })
+        } else {
+            parent = await ctx.parent.findFirst({
+                where: {
+                    accountId: parentAccount.id,
+                }
+            })
+        }
+
+        console.log('parent?.phone=', parent?.phone);
+        console.log('body.parentPhone=', body.parentPhone);
+
+        if (parent?.phone !== body.parentPhone) {
+            const errorMessage = JSON.stringify({ type: 'info', reason: 'email_not_unique' })
+            throw Error(errorMessage)
+        }
+        //-------parent end--------
+
+        //-------child start--------
+        childAccount = await ctx.account.findFirst({
             where: {
-                accountId: parentAccount.id,
+                email: childFakeEmail,
+                role: ROLE.CHILD,
             }
         })
-    }
 
-    const currentParentChildRelation = await ctx.parentChildRelation.findFirst({
-        where: {
-            parentId: (parent as Parent).id,
-            childId: (child as Child).id,
+        if (!childAccount) {
+            childAccount = await ctx.account.create({
+                data: {
+                    email: childFakeEmail,
+                    password: await createPassword(),
+                    role: ROLE.CHILD,
+                }
+            })
+
+            child = await ctx.child.create({
+                data: {
+                  firstName: body.childFirstName,
+                  lastName: body.childLastName,
+                  dob: body.childDob,
+                  gender: body.childGender,
+                  city: body.childCity,
+                  allowPhoto: body.childAllowPhoto,
+                  accountId: childAccount.id,
+                },
+            })
+        } else {
+            child = await ctx.child.findFirst({
+                where: {
+                    accountId: childAccount.id,
+                }
+            })
         }
-    })
+        //-------child end--------
 
-    if (!currentParentChildRelation) {
-        await ctx.parentChildRelation.create({
-            data: {
+        const currentParentChildRelation = await ctx.parentChildRelation.findFirst({
+            where: {
                 parentId: (parent as Parent).id,
                 childId: (child as Child).id,
             }
         })
-    }
 
-    const data = {
-        parent: { ...parent, email: parentAccount.email },
-        child: { ...child, email: childAccount.email },
+        if (!currentParentChildRelation) {
+            await ctx.parentChildRelation.create({
+                data: {
+                    parentId: (parent as Parent).id,
+                    childId: (child as Child).id,
+                }
+            })
+        }
+
+        const data = {
+            parent: { ...parent, email: parentAccount.email },
+            child: { ...child, email: childAccount.email },
+        }
+        return { data }
+    })
+
+
+    const reqUrl = new URL(req.url)
+    const encodedData = encodeURIComponent(encode(JSON.stringify(transaction.data)))
+    const QrCodeUrl = await QRCode.toDataURL(`${reqUrl.origin}/qrcode/${encodedData}`)
+    const html = `<p>QR-code для ${body.childFirstName} ${body.childLastName}:</p>
+                  </br><img src="${QrCodeUrl}" width="512" height="512"></br></br>
+                  <p>Або за посиланням:</p></br>
+                  <a href=${reqUrl.origin}/qrcode/${encodedData}>подивитись qr-code</a>`
+    const isSentEmail = await sendMail({ subject: 'Спільно. Unicef. QR-code', toEmail: body.parentEmail, html })
+
+    return NextResponse.json({ data: transaction.data, isSentEmail })
+  } catch(error) {
+    let message = (error as Error).message
+    if (message.includes('constraint') && message.includes('Parent_phone_key')) {
+        message = JSON.stringify({ type: 'info', reason: 'phone_not_unique'})
     }
-    return { data }
-})
-  return NextResponse.json({ data: transaction.data })
+    if (!message.includes('"type":"info"')) {
+        message = JSON.stringify({ type: 'error', reason: message })
+    }
+    return NextResponse.json({}, { status: 400, statusText: message })
+  }
 }

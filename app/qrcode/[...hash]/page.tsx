@@ -5,6 +5,8 @@ import { decode } from 'js-base64'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
 
 interface QrCodeProps {
     params: { hash: string }
@@ -14,11 +16,10 @@ const QrCode = (props: QrCodeProps) => {
     const encodedData = props.params.hash[0]
 
     const decodedData = JSON.parse(decode(decodeURIComponent(encodedData)))
-    console.log('pathname=', { decodedData})
+    console.log('decodedData=', decodedData)
     const { firstName, lastName } = decodedData.child
 
     const manageChildCourseUrl = `${location.origin}/manage/child-course/${encodedData}`
-    // const manageChildCourseUrl = `http://192.168.1.6:3000/manage/child-course/${encodedData}`
 
     return (
         <Container component="main" maxWidth="xs">
@@ -30,10 +31,15 @@ const QrCode = (props: QrCodeProps) => {
                 alignItems: 'center',
               }}
             >
-                <Typography component="h1" variant="h5">
-                  QrCode for {`${firstName} ${lastName}`}
-                </Typography>
-                <QRCodeCanvas value={manageChildCourseUrl} size={512} />
+                <Typography component="h2" variant="h6">Покажіть даний QR-code менеджеру</Typography>
+                <Typography component="h1" variant="h6">для реєстрації на майстер-клас</Typography>
+                <Typography component="h1" variant="h6">вашої дитини:</Typography>
+                <Typography component="h1" variant="h5">{`${firstName} ${lastName}`}</Typography>
+                <Card sx={{ marginTop: 2, marginBottom: 2 }}>
+                  <CardContent>
+                    <QRCodeCanvas value={manageChildCourseUrl} size={512} />
+                  </CardContent>
+                </Card>
                 <Link href={`/manage/child-course/${encodedData}`}>manage/child-course/</Link>
             </Box>
         </Container>

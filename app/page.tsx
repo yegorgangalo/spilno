@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 import * as React from 'react'
 import Button from '@mui/material/Button'
@@ -15,13 +16,14 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateField } from '@mui/x-date-pickers/DateField'
 import { encode } from 'js-base64'
 import BasicSelect from '@/components/BasicSelect'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-
-const isEmptyObject = (obj: object) => {
-  return typeof obj === 'object' && !Object.keys(obj).length
-}
+import { parsePhoneNumber } from 'libphonenumber-js'
+import { isEmptyObject } from '@/app/frontend-services/helpers'
+import { isValidPhone } from '@/app/frontend-services/validation'
 
 enum GENDER {
   MALE = 'жін',
@@ -38,26 +40,41 @@ interface ISignUpData {
   childCity: string
   childDob: React.ChangeEvent<Element>
   childGender: string
-  childAllowPhoto?: string
-  terms?: string
+  childAllowPhoto?: boolean
+  terms?: boolean
 }
 
+interface IApiError {
+  type: string
+  text: string
+}
+
+const genderList = [{ id: GENDER.MALE, title: GENDER.MALE }, { id: GENDER.FEMALE, title: GENDER.FEMALE }]
+
+yup.addMethod(yup.Schema, 'isValidPhone', isValidPhone)
 const signUpSchema = yup.object().shape({
   parentFirstName: yup.string().required(),
   parentLastName: yup.string().required(),
-  parentPhone: yup.string().required(),
+  parentPhone: yup.string().isValidPhone().required(),
   parentEmail: yup.string().email().required(),
   childFirstName: yup.string().required(),
   childLastName: yup.string().required(),
   childCity: yup.string().required(),
   childDob: yup.string().required(),
   childGender: yup.string().oneOf([GENDER.MALE, GENDER.FEMALE]).required(),
-  childAllowPhoto: yup.string(),
-  terms: yup.string(),
+  childAllowPhoto: yup.boolean(),
+  terms: yup.boolean(),
 }).required()
+
+const apiErrorTextMap = {
+  phone_not_unique: 'Акаунт з таким іншим номером телефону, але з іншим емейл вже існує. Пара емейл-телефон має бути ідентична',
+  email_not_unique: 'Акаунт з таким емейл, але з іншим номером телефону вже існує. Пара емейл-телефон має бути ідентична',
+}
 
 export default function SignUp() {
   const router = useRouter()
+
+  const [apiError, setApiError] = React.useState<IApiError | null>(null)
 
   const { register, control, handleSubmit, reset, formState: { errors } } = useForm<ISignUpData>({
     defaultValues: {
@@ -70,36 +87,51 @@ export default function SignUp() {
       childCity: '',
       childDob: '',
       childGender: '',
-      childAllowPhoto: 'true',
-      terms: 'true',
+      childAllowPhoto: true,
+      terms: true,
     },
     resolver: yupResolver<ISignUpData>(signUpSchema),
   })
 
   const onSubmit = async (data: ISignUpData) => {
+    apiError && setApiError(null)
     if (!isEmptyObject(errors)) {
       return
     }
-    const response = await fetch('/api/signup', { body: JSON.stringify(data), method: 'POST' })
-    const signupResult = await response.json()
-    const encodedData = encodeURIComponent(encode(JSON.stringify(signupResult.data)))
-    router.push(`/qrcode/${encodedData}`)
-  }
 
-  const genderList = [{ id: GENDER.MALE, title: GENDER.MALE }, { id: GENDER.FEMALE, title: GENDER.FEMALE }]
+    try {
+      data.parentPhone = parsePhoneNumber(data.parentPhone, 'UA').number
+      const response = await fetch('/api/signup', { body: JSON.stringify(data), method: 'POST' })
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
+      const signupResult = await response.json()
+      const encodedData = encodeURIComponent(encode(JSON.stringify(signupResult.data)))
+      router.push(`/qrcode/${encodedData}`)
+    } catch (error) {
+      const message = (error as Error).message
+      if (message.includes('"type":"info"')) {
+        const { type, reason } = JSON.parse(message)
+        setApiError({ type, text: apiErrorTextMap[reason] || reason})
+      } else {
+        setApiError({ type: 'error', text: message})
+      }
+    }
+  }
 
   return (
       <Container component="main" maxWidth="xs">
         <Box
           sx={{
             marginTop: 8,
+            marginBottom: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h5">
-            Spilno
+          <Typography component="h1" variant="h2">
+            Спільно
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -117,6 +149,7 @@ export default function SignUp() {
                       label="Ім'я"
                       error={!!errors.parentFirstName}
                       helperText={errors.parentFirstName?.message}
+                      fullWidth
                       autoFocus
                       required
                     />
@@ -134,6 +167,7 @@ export default function SignUp() {
                       label="Прізвище"
                       error={!!errors.parentLastName}
                       helperText={errors.parentLastName?.message}
+                      fullWidth
                       required
                     />
                   )}
@@ -289,22 +323,30 @@ export default function SignUp() {
                 />
               </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Отримати QR-code
-            </Button>
-            {/* <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid> */}
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Отримати QR-code
+              </Button>
+            </Grid>
+            {apiError ? <Grid item xs={12}>
+              <Alert severity={apiError.type}>
+                <AlertTitle>{apiError.type}</AlertTitle>
+                {apiError.text}
+              </Alert>
+            </Grid> : null}
           </Box>
+          {/* <Grid container justifyContent="center">
+            <Grid item>
+              <Link href="/signin" variant="body2">
+                Вхід для менеджерів
+              </Link>
+            </Grid>
+          </Grid> */}
         </Box>
       </Container>
   )

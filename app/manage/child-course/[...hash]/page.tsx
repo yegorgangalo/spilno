@@ -3,11 +3,13 @@ import * as React from 'react'
 import { useSession } from 'next-auth/react'
 import { decode } from 'js-base64'
 
-import dayjs, { Dayjs } from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-
+import dayjs, { Dayjs } from 'dayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -57,7 +59,7 @@ interface ManageChildCoursePageProps {
 
 const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
   const [selectedCourseId, setSelectedCourseId] = React.useState<number | string>('')
-  const [visitTime, setVisitTime] = React.useState<Dayjs | null>(dayjs(new Date()));
+  const [visitTime, setVisitTime] = React.useState<Dayjs | null>(dayjs(new Date()))
 
   const courseResponse = useFetchCourses()
 
@@ -83,7 +85,7 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
         }
       })
       const signupResult = await response.json()
-      console.log('signupResult=', signupResult);
+      console.log('signupResult=', signupResult)
 
       if (signupResult) {
         // mutate('/api/course')
@@ -112,12 +114,17 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
             >
               <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Typography component="h1" variant="h5">Дані дитини:</Typography>
-                <Typography component="h6" variant="h6">{`Прізвище та Ім'я: ${lastName} ${firstName}`}</Typography>
-                <Typography component="h6" variant="h6">{`Вік: ${calculateFullYears(dob)} років`}</Typography>
-                <Typography component="h6" variant="h6">{`Стать: ${gender}`}</Typography>
-                <Typography component="h6" variant="h6">{`Місто: ${city}`}</Typography>
-                <Typography component="h6" variant="h6">{`Дозволено фотографувати: ${allowPhoto ? 'так' : 'ні'}`}</Typography>
+                <Card sx={{ minWidth: 300, backgroundColor: allowPhoto ? '#DEFFCB' : '#FFCBCB' }}>
+                  <CardHeader title='Дані дитини'/>
+                  <CardContent>
+                    <Typography component="h6" variant="h6">{`Ім'я: ${firstName}`}</Typography>
+                    <Typography component="h6" variant="h6">{`Прізвище: ${lastName}`}</Typography>
+                    <Typography component="h6" variant="h6">{`Вік: ${calculateFullYears(dob)} років`}</Typography>
+                    <Typography component="h6" variant="h6">{`Стать: ${gender}`}</Typography>
+                    <Typography component="h6" variant="h6">{`Місто: ${city}`}</Typography>
+                    <Typography component="h6" variant="h6">{`Дозвіл на фото: ${allowPhoto ? 'так' : 'ні'}`}</Typography>
+                  </CardContent>
+                </Card>
               </Grid>
               <Grid item xs={12}>
                 <BasicSelect
@@ -134,6 +141,8 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
                     label='Час відвідування майстер-класу'
                     value={visitTime}
                     onChange={(newTime) => setVisitTime(newTime)}
+                    // disablePast
+                    sx={{ width: '100%' }}
                   />
                 </LocalizationProvider>
               </Grid>

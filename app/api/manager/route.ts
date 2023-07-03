@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { bcryptPassword } from '@/services/common'
 import { ROLE } from '@/services/const'
 import { verifyJwtAuth } from '@/lib/jwt'
+import { sendMail } from '@/services/mailService'
 
 export async function PATCH(req: Request) {
     try {
@@ -48,8 +49,12 @@ export async function POST(req: Request) {
             }
         })
 
+        const html = `<p>Login: ${body.email}</br>Password: ${body.password}</p>`
+
+        const isSentEmail = await sendMail({ subject: 'Дані для входу в Спільно. Unicef', toEmail: managerAccount.email, html })
+
         const data = {
-            manager: { ...manager, email: managerAccount.email },
+            manager: { ...manager, email: managerAccount.email, isSentEmail },
         }
         return { data }
     })
