@@ -4,7 +4,6 @@ interface ISendEmail {
     subject: string
     toEmail: string
     html: string
-    // text: string
 }
 
 //-----------------------------------------------------------------------------

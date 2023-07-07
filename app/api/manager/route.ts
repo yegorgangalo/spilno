@@ -27,60 +27,74 @@ export async function PATCH(req: Request) {
 }
 
 export async function POST(req: Request) {
-    const body = await req.json()
-    console.log('POST manager body:', body);
+    try {
+        const body = await req.json()
+        console.log('POST manager body:', body);
 
-    const transaction = await prisma.$transaction(async (ctx) => {
-        const managerAccount = await ctx.account.create({
-            data: {
-                email: body.email,
-                password: await bcryptPassword(body.password),
-                role: ROLE.MANAGER,
+        const transaction = await prisma.$transaction(async (ctx) => {
+            const managerAccount = await ctx.account.create({
+                data: {
+                    email: body.email,
+                    password: await bcryptPassword(body.password),
+                    role: ROLE.MANAGER,
+                }
+            })
+
+            const manager = await ctx.manager.create({
+                data: {
+                    firstName: body.firstName,
+                    lastName: body.lastName,
+                    phone: body.phone,
+                    location: body.location,
+                    isActive: true,
+                    accountId: managerAccount.id,
+                }
+            })
+
+            const html = `<p>Login: ${body.email}</br>Password: ${body.password}</p>`
+
+            const isSentEmail = await sendMail({ subject: 'Дані для входу в Спільно. Unicef', toEmail: managerAccount.email, html })
+
+            const data = {
+                manager: { ...manager, email: managerAccount.email, isSentEmail },
             }
+            return { data }
         })
 
-        const manager = await ctx.manager.create({
-            data: {
-                firstName: body.firstName,
-                lastName: body.lastName,
-                phone: body.phone,
-                isActive: true,
-                accountId: managerAccount.id,
-            }
-        })
+        console.log('transaction manager result:', transaction);
 
-        const html = `<p>Login: ${body.email}</br>Password: ${body.password}</p>`
-
-        const isSentEmail = await sendMail({ subject: 'Дані для входу в Спільно. Unicef', toEmail: managerAccount.email, html })
-
-        const data = {
-            manager: { ...manager, email: managerAccount.email, isSentEmail },
+        return NextResponse.json({ data: transaction.data, success: true })
+    } catch (error) {
+        const message = (error as Error).message
+        if (message.includes('Account_email_key')) {
+            return NextResponse.json({ error: { message: 'Даний email вже зареєстрований', type: 'info' }, success: false })
         }
-        return { data }
-    })
-
-    console.log('transaction manager result:', transaction);
-
-    return NextResponse.json({ data: transaction.data })
+        return NextResponse.json({ error, success: false })
+    }
 }
 
 export const GET = (req: Request) => verifyJwtAuth(req, async () => {
-    const managers = await prisma.manager.findMany({
-        include: {
-            account: {
-                select: {
-                    email: true,
+    try {
+        const managers = await prisma.manager.findMany({
+            include: {
+                account: {
+                    select: {
+                        email: true,
+                    }
                 }
             }
-        }
-    })
-    const normalizedData = managers.map(manager => ({
-        id: manager.id,
-        firstName: manager.firstName,
-        lastName: manager.lastName,
-        phone: manager.phone,
-        email: manager.account.email,
-        isActive: manager.isActive,
-    }))
-    return NextResponse.json({ data: normalizedData })
+        })
+        const normalizedData = managers.map(manager => ({
+            id: manager.id,
+            firstName: manager.firstName,
+            lastName: manager.lastName,
+            phone: manager.phone,
+            email: manager.account.email,
+            location: manager.location,
+            isActive: manager.isActive,
+        }))
+        return NextResponse.json({ data: normalizedData, success: true })
+    } catch (error) {
+        return NextResponse.json({ error, success: false })
+    }
 })

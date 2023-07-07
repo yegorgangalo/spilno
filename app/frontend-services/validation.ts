@@ -1,13 +1,13 @@
-import { parsePhoneNumber } from 'libphonenumber-js'
+import { parsePhoneNumber, CountryCode } from 'libphonenumber-js'
+import * as yup from 'yup'
 
-export function isValidPhone (message: string, country: string) {
-  return this.test('isValidPhone', message, function (formPhoneValue) {
+export function isValidPhone(this: yup.Schema , message: string, country?: CountryCode) {
+  return this.test('isValidPhone', message, function (formPhoneValue: string) {
     const { path, createError } = this
     const yupError = createError({ path, message: 'введіть український телефон' })
     try {
       const isValid = parsePhoneNumber(formPhoneValue, country || 'UA').isValid() //need trycatch
       return isValid || yupError
-      return !!isValid
     } catch (err) {
       return yupError
     }

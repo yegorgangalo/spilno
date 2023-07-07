@@ -1,5 +1,6 @@
 //npx prisma generate
 //npx prisma migrate dev --name init
+//npx prisma db seed
 //CMD+SHIFT+P developer -> restart window
 //remove node_modules and npm install
 //npx prisma studio
@@ -30,6 +31,8 @@ model Account {
   Parent    Parent[]
   Child     Child[]
   Manager   Manager[]
+
+  // @@unique([email, role])
 }
 
 model Parent {
@@ -94,15 +97,15 @@ model CourseChildRelation {
   childId   Int
   visitTime DateTime
   createdAt DateTime @default(now())
-
-  // @@unique([courseId, childId])
 }
 
 model Manager {
   id        String   @id @default(uuid())
   firstName String
   lastName  String
+  // phone     String   @unique
   phone     String
+  location  String
   isActive  Boolean
   account   Account  @relation(fields: [accountId], references: [id])
   accountId Int      @unique

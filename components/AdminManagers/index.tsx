@@ -10,8 +10,12 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 import PasswordTextField from '@/components/PasswordTextField'
 import EnhancedTable from '@/components/Table'
+import { isValidPhone } from '@/app/frontend-services/validation'
+import { parsePhoneNumber } from 'libphonenumber-js'
 
 interface IManager {
   id: string
@@ -19,6 +23,7 @@ interface IManager {
   lastName: string
   phone: string
   email: string
+  location: string
   isActive: boolean
 }
 
@@ -44,14 +49,17 @@ interface IRegisterManagerData {
   phone: string
   email: string
   password: string
+  location: string
 }
 
+yup.addMethod<yup.Schema>(yup.Schema, 'isValidPhone', isValidPhone)
 const schema = yup.object().shape({
   firstName: yup.string().required(),
   lastName: yup.string().required(),
-  phone: yup.string().required(),
+  phone: yup.string().isValidPhone().required(),
   email: yup.string().email().required(),
   password: yup.string().required(),
+  location: yup.string().required(),
 }).required()
 
 interface IAdminManagers {
@@ -67,10 +75,12 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
       phone: '',
       email: '',
       password: '',
+      location: '',
     },
     resolver: yupResolver<IRegisterManagerData>(schema),
   })
 
+  const [apiError, setApiError] = React.useState('')
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -83,13 +93,16 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
     if (!isEmptyObject(errors)) {
       return
     }
+    data.phone = parsePhoneNumber(data.phone, 'UA').number
     const response = await fetch('/api/manager', { body: JSON.stringify(data), method: 'POST' })
-    const signupResult = await response.json()
-    console.log('signupResult=', signupResult);
+    const managerSignupResult = await response.json()
+    console.log('managerSignupResult=', managerSignupResult);
 
-    if (signupResult) {
+    if (managerSignupResult.success) {
       mutate('/api/manager')
       reset()
+    } else {
+      setApiError(managerSignupResult.error.message)
     }
   }
 
@@ -98,6 +111,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
     name: `${m.firstName} ${m.lastName}`,
     phone: m.phone,
     email: m.email,
+    location: m.location,
     isActive: m.isActive,
   }))
 
@@ -111,7 +125,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box id='courseForm' component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={style}>
+            <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={style}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Controller
@@ -142,6 +156,23 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                         label="Прізвище"
                         error={!!errors.lastName}
                         helperText={errors.lastName?.message}
+                        fullWidth
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Controller
+                    name="location"
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <TextField
+                        onChange={onChange}
+                        value={value!}
+                        label="Локація"
+                        error={!!errors.location}
+                        helperText={errors.location?.message}
                         fullWidth
                         required
                       />
@@ -199,14 +230,22 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                   />
                 </Grid>
               </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Додати менеджера
-              </Button>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  >
+                  Додати менеджера
+                </Button>
+                </Grid>
+              {apiError ? <Grid item xs={12}>
+              <Alert severity='info'>
+                <AlertTitle>info</AlertTitle>
+                {apiError}
+              </Alert>
+            </Grid> : null}
             </Box>
           </Modal>
         </Box>

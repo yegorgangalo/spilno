@@ -64,25 +64,23 @@ export async function POST(req: Request) {
                   firstName: body.parentFirstName,
                   lastName: body.parentLastName,
                   phone: body.parentPhone,
-                  messenger: 'any',
+                  messenger: body.parentMessenger,
                   terms: body.terms,
                   accountId: parentAccount.id,
                 },
-              })
+            })
         } else {
             parent = await ctx.parent.findFirst({
                 where: {
                     accountId: parentAccount.id,
                 }
             })
-        }
 
-        console.log('parent?.phone=', parent?.phone);
-        console.log('body.parentPhone=', body.parentPhone);
-
-        if (parent?.phone !== body.parentPhone) {
-            const errorMessage = JSON.stringify({ type: 'info', reason: 'email_not_unique' })
-            throw Error(errorMessage)
+            console.log('DB parent phone=', parent?.phone);
+            console.log('Request body.parentPhone=', body.parentPhone);
+            if (parent?.phone !== body.parentPhone) {
+                throw Error('Account_email_key')
+            }
         }
         //-------parent end--------
 
@@ -146,7 +144,6 @@ export async function POST(req: Request) {
         return { data }
     })
 
-
     const reqUrl = new URL(req.url)
     const encodedData = encodeURIComponent(encode(JSON.stringify(transaction.data)))
     const QrCodeUrl = await QRCode.toDataURL(`${reqUrl.origin}/qrcode/${encodedData}`)
@@ -156,15 +153,15 @@ export async function POST(req: Request) {
                   <a href=${reqUrl.origin}/qrcode/${encodedData}>подивитись qr-code</a>`
     const isSentEmail = await sendMail({ subject: 'Спільно. Unicef. QR-code', toEmail: body.parentEmail, html })
 
-    return NextResponse.json({ data: transaction.data, isSentEmail })
+    return NextResponse.json({ data: transaction.data, isSentEmail, success: true })
   } catch(error) {
-    let message = (error as Error).message
-    if (message.includes('constraint') && message.includes('Parent_phone_key')) {
-        message = JSON.stringify({ type: 'info', reason: 'phone_not_unique'})
+    const message = (error as Error).message
+    if (message.includes('Parent_phone_key')) {
+        return NextResponse.json({ error: { message: 'Даний телефон вже зареєстрований', type: 'info' }, success: false })
     }
-    if (!message.includes('"type":"info"')) {
-        message = JSON.stringify({ type: 'error', reason: message })
+    if (message.includes('Account_email_key')) {
+        return NextResponse.json({ error: { message: 'Даний емейл вже зареєстрований з іншим номером телефону', type: 'info' }, success: false })
     }
-    return NextResponse.json({}, { status: 400, statusText: message })
+    return NextResponse.json({ error, success: false })
   }
 }

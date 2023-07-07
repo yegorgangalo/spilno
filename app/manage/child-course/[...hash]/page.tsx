@@ -63,8 +63,8 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
 
   const courseResponse = useFetchCourses()
 
-  const { data: session } = useSession()
-  const accessToken = session?.user.accessToken
+  const session = useSession()
+  const accessToken = session.data?.user.accessToken
 
   const courseData = courseResponse.data?.data
   const courseError = courseResponse.error

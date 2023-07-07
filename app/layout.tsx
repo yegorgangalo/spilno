@@ -1,28 +1,26 @@
-'use client'
+// 'use client'
 
 import './globals.css'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { SessionProvider } from 'next-auth/react'
+import HtmlBody from '@/components/HtmlBody'
+import Providers from '@/components/Providers'
+import { Metadata } from 'next'
 
-const defaultTheme = createTheme()
-
-// export const metadata = {
-//   title: 'Spilno',
-//   description: 'education platform',
-// }
+export const metadata: Metadata = {
+  title: 'Spilno.Unicef',
+  description: 'Education platform',
+}
 
 interface RootLayoutProps {
   children: React.ReactNode
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  return (
-    <SessionProvider>
-      <ThemeProvider theme={defaultTheme}>
-        <html lang='en'>
-          <body suppressHydrationWarning={true}>{children}</body>
-        </html>
-      </ThemeProvider>
-    </SessionProvider>
+  return (<>
+    <Providers>
+        <HtmlBody>
+          {children}
+        </HtmlBody>
+    </Providers>
+  </>
   )
 }

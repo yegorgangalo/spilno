@@ -1,8 +1,9 @@
 'use client'
+import Head from 'next/head'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-
+import Image from 'next/image'
 import * as React from 'react'
+import LinearProgress from '@mui/material/LinearProgress'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -16,6 +17,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateField } from '@mui/x-date-pickers/DateField'
 import { encode } from 'js-base64'
 import BasicSelect from '@/components/BasicSelect'
+import RadioButtonGroup from '@/components/RadioButtonGroup'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import { useForm, Controller } from 'react-hook-form'
@@ -24,17 +26,15 @@ import * as yup from 'yup'
 import { parsePhoneNumber } from 'libphonenumber-js'
 import { isEmptyObject } from '@/app/frontend-services/helpers'
 import { isValidPhone } from '@/app/frontend-services/validation'
-
-enum GENDER {
-  MALE = 'жін',
-  FEMALE = 'чол',
-}
+import { GENDER, MESSENGER } from '@/app/frontend-services/enums'
+import { genderList, messengerList } from '@/app/frontend-services/data'
 
 interface ISignUpData {
   parentFirstName: string
   parentLastName: string
   parentPhone: string
   parentEmail: string
+  parentMessenger: string
   childFirstName: string
   childLastName: string
   childCity: string
@@ -46,22 +46,21 @@ interface ISignUpData {
 
 interface IApiError {
   type: string
-  text: string
+  message: string
 }
 
-const genderList = [{ id: GENDER.MALE, title: GENDER.MALE }, { id: GENDER.FEMALE, title: GENDER.FEMALE }]
-
-yup.addMethod(yup.Schema, 'isValidPhone', isValidPhone)
+yup.addMethod<yup.Schema>(yup.Schema, 'isValidPhone', isValidPhone)
 const signUpSchema = yup.object().shape({
   parentFirstName: yup.string().required(),
   parentLastName: yup.string().required(),
   parentPhone: yup.string().isValidPhone().required(),
   parentEmail: yup.string().email().required(),
+  parentMessenger: yup.string().required(),
   childFirstName: yup.string().required(),
   childLastName: yup.string().required(),
   childCity: yup.string().required(),
   childDob: yup.string().required(),
-  childGender: yup.string().oneOf([GENDER.MALE, GENDER.FEMALE]).required(),
+  childGender: yup.string().oneOf(Object.values(GENDER)).required(),
   childAllowPhoto: yup.boolean(),
   terms: yup.boolean(),
 }).required()
@@ -75,13 +74,15 @@ export default function SignUp() {
   const router = useRouter()
 
   const [apiError, setApiError] = React.useState<IApiError | null>(null)
+  const [loading, setLoading] = React.useState(false)
 
-  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<ISignUpData>({
+  const { control, handleSubmit, formState: { errors } } = useForm<ISignUpData>({
     defaultValues: {
       parentFirstName: '',
       parentLastName: '',
       parentPhone: '',
       parentEmail: '',
+      parentMessenger: MESSENGER.SMS,
       childFirstName: '',
       childLastName: '',
       childCity: '',
@@ -99,27 +100,33 @@ export default function SignUp() {
       return
     }
 
+    setLoading(true)
     try {
       data.parentPhone = parsePhoneNumber(data.parentPhone, 'UA').number
       const response = await fetch('/api/signup', { body: JSON.stringify(data), method: 'POST' })
-      if (!response.ok) {
-        throw Error(response.statusText)
-      }
       const signupResult = await response.json()
+      if (!signupResult.success) {
+        throw signupResult.error
+      }
       const encodedData = encodeURIComponent(encode(JSON.stringify(signupResult.data)))
       router.push(`/qrcode/${encodedData}`)
     } catch (error) {
       const message = (error as Error).message
-      if (message.includes('"type":"info"')) {
-        const { type, reason } = JSON.parse(message)
-        setApiError({ type, text: apiErrorTextMap[reason] || reason})
-      } else {
-        setApiError({ type: 'error', text: message})
-      }
+      setApiError({ type: error.type || 'error' , message })
     }
+    setLoading(false)
   }
 
   return (
+    <>
+    <Head>
+      <title>Spilno. Unicef</title>
+      <meta property="og:title" content="My page title" key="title" />
+    </Head>
+      {loading
+        ? <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%' }}>
+          <LinearProgress/>\
+        </Box> : null}
       <Container component="main" maxWidth="xs">
         <Box
           sx={{
@@ -130,9 +137,7 @@ export default function SignUp() {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h2">
-            Спільно
-          </Typography>
+          <Image src='logo_vertical.svg' alt='logo' width='240' height='360' />
           <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -203,6 +208,20 @@ export default function SignUp() {
                       helperText={errors.parentEmail?.message}
                       fullWidth
                       required
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Controller
+                  name="parentMessenger"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <RadioButtonGroup
+                      onChange={onChange}
+                      value={value}
+                      buttons={messengerList}
+                      label="Месенджер для комунікації"
                     />
                   )}
                 />
@@ -336,7 +355,7 @@ export default function SignUp() {
             {apiError ? <Grid item xs={12}>
               <Alert severity={apiError.type}>
                 <AlertTitle>{apiError.type}</AlertTitle>
-                {apiError.text}
+                {apiError.message}
               </Alert>
             </Grid> : null}
           </Box>
@@ -349,5 +368,6 @@ export default function SignUp() {
           </Grid> */}
         </Box>
       </Container>
+    </>
   )
 }

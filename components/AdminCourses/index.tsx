@@ -12,6 +12,8 @@ import ControlledAccordions from '@/components/ControlledAccordions'
 import BasicSelect from '@/components/BasicSelect'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { isEmptyObject } from '@/app/frontend-services/helpers'
+import { ageList } from '@/app/frontend-services/data'
 
 const style = {
   position: 'absolute',
@@ -23,12 +25,6 @@ const style = {
   border: '1px solid grey',
   boxShadow: 24,
   p: 4,
-}
-
-const ageList = [...Array(17 + 1).keys()].map(k => ({ id: String(k), title: String(k)})).slice(1)
-
-const isEmptyObject = (obj: object) => {
-  return typeof obj === 'object' && !Object.keys(obj).length
 }
 
 interface IRegisterCourseData {

@@ -10,6 +10,8 @@ const nextConfig = {
       NODEMAILER_PORT: process.env.NODEMAILER_PORT,
       NODEMAILER_USER: process.env.NODEMAILER_USER,
       NODEMAILER_PASSWORD: process.env.NODEMAILER_PASSWORD,
+      SEED_ADMIN_LOGIN: process.env.SEED_ADMIN_LOGIN,
+      SEED_ADMIN_PASSWORD: process.env.SEED_ADMIN_PASSWORD,
     },
 }
 

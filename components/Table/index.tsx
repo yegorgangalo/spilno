@@ -25,6 +25,7 @@ interface Data {
   name: string
   phone: string
   email: string
+  location: string
   isActive: boolean
 }
 
@@ -89,6 +90,12 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: 'Емейл',
+  },
+  {
+    id: 'location',
+    numeric: true,
+    disablePadding: false,
+    label: 'Локація',
   },
   {
     id: 'isActive',
@@ -214,6 +221,7 @@ interface IManager {
     name: string
     phone: string
     email: string
+    location: string
     isActive: boolean
 }
 
@@ -304,10 +312,8 @@ const EnhancedTable = ({ rows = [], updateManagers }: IEnhancedTable) => {
       setIsDisabled(true)
       const response = await fetch('/api/manager', { method: 'PATCH', body: JSON.stringify({ id, isActive: checked })})
       const result = await response.json()
-      console.log('toggleIsActiveManager result:', result);
       if (result.success) {
         const updateRes = await updateManagers()
-        console.log('updateRes=', updateRes);
         setIsDisabled(false)
       }
 
@@ -362,6 +368,7 @@ const EnhancedTable = ({ rows = [], updateManagers }: IEnhancedTable) => {
                     <TableCell component="th" id={labelId} scope="row" padding="none">{row.name}</TableCell>
                     <TableCell align="right">{row.phone}</TableCell>
                     <TableCell align="right">{row.email}</TableCell>
+                    <TableCell align="right">{row.location}</TableCell>
                     <TableCell align="right">
                       <Switch
                         checked={!!row.isActive}
