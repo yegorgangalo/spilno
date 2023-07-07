@@ -27,6 +27,7 @@
     "js-base64": "^3.7.5",
     "jsonwebtoken": "^9.0.0",
     "libphonenumber-js": "^1.10.37",
+    "moment": "^2.29.4",
     "next": "13.4.7",
     "next-auth": "^4.22.1",
     "node-pre-gyp": "^0.17.0",

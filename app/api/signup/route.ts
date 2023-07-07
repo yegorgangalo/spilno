@@ -155,6 +155,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ data: transaction.data, isSentEmail, success: true })
   } catch(error) {
+    console.log('signup route error:', error)
     const message = (error as Error).message
     if (message.includes('Parent_phone_key')) {
         return NextResponse.json({ error: { message: 'Даний телефон вже зареєстрований', type: 'info' }, success: false })

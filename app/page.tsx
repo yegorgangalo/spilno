@@ -12,13 +12,10 @@ import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { DateField } from '@mui/x-date-pickers/DateField'
 import { encode } from 'js-base64'
 import BasicSelect from '@/components/BasicSelect'
 import RadioButtonGroup from '@/components/RadioButtonGroup'
-import Alert from '@mui/material/Alert'
+import Alert, { AlertColor } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -28,6 +25,8 @@ import { isEmptyObject } from '@/app/frontend-services/helpers'
 import { isValidPhone } from '@/app/frontend-services/validation'
 import { GENDER, MESSENGER } from '@/app/frontend-services/enums'
 import { genderList, messengerList } from '@/app/frontend-services/data'
+import { Moment } from 'moment'
+import DateTextField from '@/components/DateTextField'
 
 interface ISignUpData {
   parentFirstName: string
@@ -38,18 +37,17 @@ interface ISignUpData {
   childFirstName: string
   childLastName: string
   childCity: string
-  childDob: React.ChangeEvent<Element>
+  childDob: Moment
   childGender: string
   childAllowPhoto?: boolean
   terms?: boolean
 }
 
-interface IApiError {
-  type: string
-  message: string
+interface IApiError extends Error {
+  type: AlertColor
 }
 
-yup.addMethod<yup.Schema>(yup.Schema, 'isValidPhone', isValidPhone)
+yup.addMethod<any>(yup.Schema, 'isValidPhone', isValidPhone)
 const signUpSchema = yup.object().shape({
   parentFirstName: yup.string().required(),
   parentLastName: yup.string().required(),
@@ -64,11 +62,6 @@ const signUpSchema = yup.object().shape({
   childAllowPhoto: yup.boolean(),
   terms: yup.boolean(),
 }).required()
-
-const apiErrorTextMap = {
-  phone_not_unique: 'Акаунт з таким іншим номером телефону, але з іншим емейл вже існує. Пара емейл-телефон має бути ідентична',
-  email_not_unique: 'Акаунт з таким емейл, але з іншим номером телефону вже існує. Пара емейл-телефон має бути ідентична',
-}
 
 export default function SignUp() {
   const router = useRouter()
@@ -91,7 +84,7 @@ export default function SignUp() {
       childAllowPhoto: true,
       terms: true,
     },
-    resolver: yupResolver<ISignUpData>(signUpSchema),
+    resolver: yupResolver<ISignUpData>(signUpSchema as any),
   })
 
   const onSubmit = async (data: ISignUpData) => {
@@ -111,8 +104,9 @@ export default function SignUp() {
       const encodedData = encodeURIComponent(encode(JSON.stringify(signupResult.data)))
       router.push(`/qrcode/${encodedData}`)
     } catch (error) {
-      const message = (error as Error).message
-      setApiError({ type: error.type || 'error' , message })
+      const message = (error as IApiError).message
+      const type = (error as IApiError).type || 'error'
+      setApiError({ type, message } as IApiError)
     }
     setLoading(false)
   }
@@ -286,17 +280,12 @@ export default function SignUp() {
                     name="childDob"
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateField
-                          onChange={onChange}
-                          value={value!}
-                          label="Дата народження"
-                          error={!!errors.childDob}
-                          helperText={errors.childDob?.message}
-                          fullWidth
-                          required
-                        />
-                      </LocalizationProvider>
+                      <DateTextField
+                        onChange={onChange}
+                        value={value}
+                        error={!!errors?.childDob}
+                        helperText='Невірна дата народження'
+                      />
                     )}
                   />
               </Grid>

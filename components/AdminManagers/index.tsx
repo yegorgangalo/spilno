@@ -52,7 +52,7 @@ interface IRegisterManagerData {
   location: string
 }
 
-yup.addMethod<yup.Schema>(yup.Schema, 'isValidPhone', isValidPhone)
+yup.addMethod<any>(yup.Schema, 'isValidPhone', isValidPhone)
 const schema = yup.object().shape({
   firstName: yup.string().required(),
   lastName: yup.string().required(),
@@ -77,7 +77,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
       password: '',
       location: '',
     },
-    resolver: yupResolver<IRegisterManagerData>(schema),
+    resolver: yupResolver<IRegisterManagerData>(schema as any),
   })
 
   const [apiError, setApiError] = React.useState('')
