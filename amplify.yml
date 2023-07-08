@@ -9,8 +9,6 @@ frontend:
         - npm run build
         - echo "DATABASE_URL=$DATABASE_URL" >> .env
         - cat .env
-        - echo "DATABASE_URL=$DATABASE_URL" >> backend/.env
-        - cat backend/.env
         - npm run generate
         - npm run migrate
         # - npm run seed
