@@ -11,8 +11,8 @@ frontend:
         - cat .env
         - npm run build
         - npm run generate
-        # - npm run migrate
-        - prisma db pull
+        - npm run migrate
+        # - npx prisma db pull
         # - npm run seed
   artifacts:
     baseDirectory: .next
