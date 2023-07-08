@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "generate": "npx prisma generate",
-    "migrate": "npx prisma migrate dev --name init",
+    "migrate": "npx prisma migrate deploy",
     "seed": "npx prisma db seed",
     "lint": "next lint"
   },
