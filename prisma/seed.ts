@@ -22,10 +22,10 @@ async function runSeedDb() {
 
         const manager = await ctx.manager.create({
             data: {
-                firstName: 'Yegor',
-                lastName: 'Gangalo',
-                phone: '380979604065',
-                location: 'Lviv',
+                firstName: 'Микола',
+                lastName: 'Mихальчук',
+                phone: '+380636004135',
+                location: 'Київ',
                 isActive: true,
                 accountId: managerAccount.id,
             }

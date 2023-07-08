@@ -11,7 +11,7 @@ frontend:
         - npm run build
         - npm run generate
         - npm run migrate
-        # - npm run seed
+        - npm run seed
   artifacts:
     baseDirectory: .next
     files:
