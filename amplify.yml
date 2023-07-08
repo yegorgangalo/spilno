@@ -8,7 +8,7 @@ frontend:
       commands:
         # - echo "DATABASE_URL=$DATABASE_URL" >> .env
         - echo "DATABASE_URL=$DATABASE_URL" >> .env
-        - cat prisma/.env
+        - cat .env
         - npm run build
         - npm run generate
         # - npm run migrate
