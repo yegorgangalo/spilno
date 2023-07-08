@@ -11,7 +11,10 @@ interface IRequestBody {
 
 export async function POST(req: Request) {
     const body: IRequestBody = await req.json()
-    console.log('|-|>>>>>>>>>>>- signin body=', body);
+    console.log('|-|>>>>>>>>>>>- signin body=', {
+        body,
+        DATABASE_URL: process.env.DATABASE_URL
+    });
 
     const account = await prisma.account.findFirst({
         where: {

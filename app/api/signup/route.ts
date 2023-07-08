@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server'
 import { encode } from 'js-base64'
 import QRCode from 'qrcode'
-// import { prisma } from '@/lib/prisma'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { generateFakeEmail, createPassword } from '@/services/common'
 import { ROLE } from '@/services/const'
 import { sendMail } from '@/services/mailService'
-
-const prisma = new PrismaClient()
 
 interface Parent {
     id       : number,
