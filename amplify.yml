@@ -7,12 +7,10 @@ frontend:
     build:
       commands:
         # - echo "DATABASE_URL=$DATABASE_URL" >> .env
-        - echo "DATABASE_URL=$DATABASE_URL" >> .env
-        - cat .env
+        # - cat .env
         - npm run build
         - npm run generate
         - npm run migrate
-        # - npx prisma db pull
         # - npm run seed
   artifacts:
     baseDirectory: .next
