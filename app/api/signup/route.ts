@@ -32,7 +32,7 @@ interface Child {
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    console.log(body);
+    console.log('signup incoming data:', { body });
 
     const transaction = await prisma.$transaction(async (ctx) => {
         let parentAccount = null
