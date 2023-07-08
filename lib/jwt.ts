@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
 
 interface SignOption {
@@ -21,7 +21,7 @@ const verifyJwt = (token: string) => {
       throw Error('wrong type of token')
     }
     const tokenWithoutBearer = token.split(' ')[1]
-    const secret_key = process.env.JWT_SECRET_KEY
+    const secret_key = process.env.JWT_SECRET_KEY as Secret
     const decoded = jwt.verify(tokenWithoutBearer, secret_key)
     return decoded as JwtPayload
   } catch (error) {
