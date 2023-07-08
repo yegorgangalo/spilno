@@ -7,10 +7,10 @@ frontend:
     build:
       commands:
         - npm run build
-        - echo "DATABASE_URL=$DATABASE_URL" >> .env
+        # - echo "DATABASE_URL=$DATABASE_URL" >> .env
         - npm run generate
         - npm run migrate
-        - npm run seed
+        # - npm run seed
   artifacts:
     baseDirectory: .next
     files:
