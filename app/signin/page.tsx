@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import Image from 'next/image'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import Link from 'next/link'
@@ -12,7 +13,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import PasswordTextField from '@/components/PasswordTextField'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const isEmptyObject = (obj: object) => {
@@ -80,9 +81,7 @@ const SignInPage = () => {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h5">
-            Spilno
-          </Typography>
+          <Image src='logo_vertical.svg' alt='logo' width='240' height='360' />
           {showNoAccessMessage && <Typography component="h6" variant="h6">Авторизуйтесь</Typography>}
             <Box id='courseForm' component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
