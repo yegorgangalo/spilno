@@ -22,7 +22,7 @@ const AssignCoursePage = (props: AssignCoursePageProps) => {
                 }}
                 >
                 <Typography component="h1" variant="h5">
-                AssignCoursePage
+                    Тут можна додати логіку призначення курсу для дитини, яку будемо шукати по базі даних. Альтернатива для опікунів, які не можуть знайти qr-code своєї дитини від попередньої реєстрації
                 </Typography>
             </Box>
         </Container>

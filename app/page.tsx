@@ -147,7 +147,7 @@ export default function SignUp() {
                       value={value!}
                       label="Ім'я"
                       error={!!errors.parentFirstName}
-                      helperText={errors.parentFirstName?.message}
+                      helperText={!!errors.parentFirstName ? "Введіть ваше ім'я" : ''}
                       fullWidth
                       autoFocus
                       required
@@ -165,7 +165,7 @@ export default function SignUp() {
                       value={value!}
                       label="Прізвище"
                       error={!!errors.parentLastName}
-                      helperText={errors.parentLastName?.message}
+                      helperText={!!errors.parentLastName ? 'Введіть ваше прізвище' : ''}
                       fullWidth
                       required
                     />
@@ -199,7 +199,7 @@ export default function SignUp() {
                       value={value!}
                       label="Електронна пошта"
                       error={!!errors.parentEmail}
-                      helperText={errors.parentEmail?.message}
+                      helperText={!!errors.parentEmail ? 'Введіть емейл' : ''}
                       fullWidth
                       required
                     />
@@ -234,7 +234,7 @@ export default function SignUp() {
                       value={value!}
                       label="Ім'я"
                       error={!!errors.childFirstName}
-                      helperText={errors.childFirstName?.message}
+                      helperText={!!errors.childFirstName ? "Введіть ім'я дитини" : ''}
                       fullWidth
                       required
                     />
@@ -251,7 +251,7 @@ export default function SignUp() {
                       value={value!}
                       label="Прізвище"
                       error={!!errors.childLastName}
-                      helperText={errors.childLastName?.message}
+                      helperText={!!errors.childLastName ? "Введіть прізвище дитини" : ''}
                       fullWidth
                       required
                     />
@@ -268,7 +268,7 @@ export default function SignUp() {
                       value={value!}
                       label="Місто"
                       error={!!errors.childCity}
-                      helperText={errors.childCity?.message}
+                      helperText={!!errors.childCity ? "Вкажіть місто" : ''}
                       fullWidth
                       required
                     />
@@ -301,6 +301,7 @@ export default function SignUp() {
                       value={value ?? ''}
                       label="Стать*"
                       error={!!errors.childGender}
+                      helperText='Вкажіть стать'
                     />
                   )}
                 />

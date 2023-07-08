@@ -35,7 +35,7 @@ const AdminPanel = () => {
   const nextSearchParams = useSearchParams()
 
   const courseResponse = useFetchCourses()
-  const courseData = courseResponse.data?.data
+  const courseData = courseResponse.data?.data || []
   const courseError = courseResponse.error
   const courseIsLoading = courseResponse.isLoading
 
@@ -76,8 +76,8 @@ const AdminPanel = () => {
         >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tab} onChange={handleChange} aria-label='basic tabs example'>
-              <Tab label='Courses' {...a11yProps(TAB.courses)} />
-              <Tab label='Managers' {...a11yProps(TAB.managers)} />
+              <Tab label='Курси' {...a11yProps(TAB.courses)} />
+              <Tab label='Менеджери' {...a11yProps(TAB.managers)} />
             </Tabs>
           </Box>
           <TabPanel value={tab} index={0}>

@@ -18,9 +18,10 @@ interface BasicSelectProps {
     value: string | number | null,
     onChange: (value: string | number) => void,
     error?: boolean,
+    helperText?: string
   }
 
-const BasicSelect = ({ name, label, required = false, menuItems, value, onChange, error }: BasicSelectProps) => {
+const BasicSelect = ({ name, label, required = false, menuItems, value, onChange, error, helperText }: BasicSelectProps) => {
     const handleChange = (event: SelectChangeEvent) => {
         onChange(event.target.value as string | number)
     }
@@ -39,7 +40,7 @@ const BasicSelect = ({ name, label, required = false, menuItems, value, onChange
           >
             {menuItems.map(i => <MenuItem key={i.id} value={i.id}>{i.title}</MenuItem>)}
           </Select>
-          {error ? <FormHelperText>Required field</FormHelperText> : null}
+          {error ? <FormHelperText>{helperText}</FormHelperText> : null}
         </FormControl>
       </Box>
     )

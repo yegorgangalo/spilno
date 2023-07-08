@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import Link from 'next/link'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -119,14 +120,21 @@ const SignInPage = () => {
                   />
                 </Grid>
               </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Авторизуватися
-              </Button>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  >
+                  Авторизуватися
+                </Button>
+              </Grid>
+              <Grid container justifyContent="center">
+                <Grid item>
+                  <Link href="/">На головну</Link>
+                </Grid>
+              </Grid>
             </Box>
         </Box>
     </Container>

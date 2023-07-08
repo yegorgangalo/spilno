@@ -85,24 +85,29 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
+    apiError && setApiError('')
     reset()
   }
 
   const onSubmit = async (data: IRegisterManagerData) => {
-    console.log(data)
+    apiError && setApiError('')
     if (!isEmptyObject(errors)) {
       return
     }
-    data.phone = parsePhoneNumber(data.phone, 'UA').number
-    const response = await fetch('/api/manager', { body: JSON.stringify(data), method: 'POST' })
-    const managerSignupResult = await response.json()
-    console.log('managerSignupResult=', managerSignupResult);
+    try {
+      data.phone = parsePhoneNumber(data.phone, 'UA').number
+      const response = await fetch('/api/manager', { body: JSON.stringify(data), method: 'POST' })
+      const managerSignupResult = await response.json()
 
-    if (managerSignupResult.success) {
-      mutate('/api/manager')
-      reset()
-    } else {
-      setApiError(managerSignupResult.error.message)
+      if (managerSignupResult.success) {
+        mutate('/api/manager')
+        reset()
+      } else {
+        setApiError(managerSignupResult.error.message)
+      }
+    } catch (error) {
+      console.log('managerSignup error:', error);
+      setApiError('Помилка на сервері. Менеджера не додано')
     }
   }
 
@@ -239,13 +244,16 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                   >
                   Додати менеджера
                 </Button>
-                </Grid>
-              {apiError ? <Grid item xs={12}>
-              <Alert severity='info'>
-                <AlertTitle>info</AlertTitle>
-                {apiError}
-              </Alert>
-            </Grid> : null}
+              </Grid>
+              {apiError
+                ? <Grid item xs={12}>
+                    <Alert severity='info'>
+                      <AlertTitle>info</AlertTitle>
+                      {apiError}
+                    </Alert>
+                  </Grid>
+                : null
+              }
             </Box>
           </Modal>
         </Box>

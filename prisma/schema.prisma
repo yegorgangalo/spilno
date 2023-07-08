@@ -7,15 +7,12 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "mysql"
   url = env("DATABASE_URL")
   shadowDatabaseUrl = env("DATABASE_URL")
-  // directUrl = env("DATABASE_URL")
-  // url      = "mysql://spilno_admin:Very_interesting_project!@spilnodb1.ccdv13yqnmn8.eu-north-1.rds.amazonaws.com:3306/spilnodb1"
 }
 
 enum ROLE {

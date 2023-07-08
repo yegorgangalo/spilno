@@ -14,14 +14,14 @@ import MenuItem from '@mui/material/MenuItem'
 import { ROLE } from '@/services/const'
 
 const PAGE_NAME_MAP = {
-  '/admin': 'admin panel',
-  '/account': 'account information',
-  '/manage/child-course': 'course assignment'
+  '/admin': 'Панель адміністратора',
+  '/account': 'Інфо акаунта',
+  '/manage/child-course': 'Призначення курсу'
 }
 
 const menuItems = [
-  { name: 'Admin panel', route: '/admin' },
-  { name: 'manage child course', route: '/manage/child-course' }
+  { name: 'Панель адміністратора', route: '/admin' },
+  { name: 'Призначення курсу', route: '/manage/child-course' }
 ]
 
 const MenuBar = () => {
@@ -94,8 +94,8 @@ const MenuBar = () => {
             {PAGE_NAME_MAP[pathname.toLowerCase() as keyof typeof PAGE_NAME_MAP]?.toUpperCase()}
           </Typography>
           {isLoggedIn
-            ? <Button onClick={() => signOut({ callbackUrl: '/signin'})} color="inherit">Logout</Button>
-            : <Button onClick={() => signIn()} color="inherit">Login</Button>
+            ? <Button onClick={() => signOut({ callbackUrl: '/signin'})} color="inherit">Вихід</Button>
+            : <Button onClick={() => signIn()} color="inherit">Вхід</Button>
           }
         </Toolbar>
       </AppBar>

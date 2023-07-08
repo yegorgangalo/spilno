@@ -8,6 +8,8 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 import ControlledAccordions from '@/components/ControlledAccordions'
 import BasicSelect from '@/components/BasicSelect'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -65,30 +67,39 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
     resolver: yupResolver<IRegisterCourseData>(schema),
   })
 
+  const [apiError, setApiError] = React.useState('')
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
+    apiError && setApiError('')
     reset()
   }
 
   const onSubmit = async (data: IRegisterCourseData) => {
-    console.log(data)
+    apiError && setApiError('')
     if (!isEmptyObject(errors)) {
       return
     }
-    const response = await fetch('/api/course', { body: JSON.stringify(data), method: 'POST' })
-    const signupResult = await response.json()
-    if (signupResult) {
-      mutate('/api/course')
-      reset()
+    try {
+      const response = await fetch('/api/course', { body: JSON.stringify(data), method: 'POST' })
+      const createCourseResult = await response.json()
+      if (createCourseResult.success) {
+        mutate('/api/course')
+        reset()
+      } else {
+        setApiError(createCourseResult.error.message)
+      }
+    } catch (error) {
+      console.log('createCourse error:', error);
+      setApiError('Помилка на сервері. Курс не додано')
     }
   }
 
   return (
         <Box sx={{ minWidth: 500 }}>
           <ControlledAccordions courses={courses}/>
-          <Button variant="contained" sx={{ width: '100%', marginTop: 2}} onClick={handleOpen}>Add course</Button>
+          <Button variant="contained" sx={{ width: '100%', marginTop: 2}} onClick={handleOpen}>Створити курс</Button>
           <Modal
             open={open}
             onClose={handleClose}
@@ -105,10 +116,10 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
                       <TextField
                         onChange={onChange}
                         value={value!}
-                        label="Назва курсу"
-                        margin="normal"
+                        label='Назва курсу'
+                        margin='normal'
                         error={!!errors.title}
-                        helperText={errors.title?.message}
+                        helperText={!!errors.title ? 'Введіть назву курсу' : ''}
                         fullWidth
                         autoFocus
                         required
@@ -162,14 +173,25 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
                   />
                 </Grid>
               </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Додати курс
-              </Button>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  >
+                  Додати курс
+                </Button>
+              </Grid>
+              {apiError
+                ? <Grid item xs={12}>
+                    <Alert severity='info'>
+                      <AlertTitle>info</AlertTitle>
+                      {apiError}
+                    </Alert>
+                  </Grid>
+                : null
+              }
             </Box>
           </Modal>
         </Box>
