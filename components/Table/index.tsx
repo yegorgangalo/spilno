@@ -225,7 +225,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 //   )
 // }
 
-interface IManager {
+interface INormalizedManager {
     id: string
     name: string
     phone: string
@@ -236,7 +236,7 @@ interface IManager {
 }
 
 interface IEnhancedTable {
-    rows: IManager[]
+    rows: INormalizedManager[]
     updateManagers: () => Promise<any>,
 }
 

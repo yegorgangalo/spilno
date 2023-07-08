@@ -18,18 +18,8 @@ import BasicSelect from '@/components/BasicSelect'
 import { isValidPhone } from '@/app/frontend-services/validation'
 import { parsePhoneNumber } from 'libphonenumber-js'
 import { ROLE } from '@/services/const'
+import { IManager } from '@/app/ts/interfaces/IManager.interface'
 import { availableManagerRoles } from '@/app/frontend-services/data'
-
-interface IManager {
-  id: string
-  firstName: string
-  lastName: string
-  phone: string
-  email: string
-  location: string
-  role: ROLE
-  isActive: boolean
-}
 
 const style = {
   position: 'absolute',
@@ -47,14 +37,9 @@ const isEmptyObject = (obj: object) => {
   return typeof obj === 'object' && !Object.keys(obj).length
 }
 
-interface IRegisterManagerData {
-  firstName: string
-  lastName: string
-  phone: string
-  email: string
+type OmittedProps = 'id' | 'isActive'
+interface IRegisterManagerData extends Omit<IManager, OmittedProps> {
   password: string
-  location: string
-  role: ROLE
 }
 
 yup.addMethod<any>(yup.Schema, 'isValidPhone', isValidPhone)
