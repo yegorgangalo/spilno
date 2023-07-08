@@ -1,5 +1,6 @@
 import * as React from 'react'
 import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -12,6 +13,7 @@ import Paper from '@mui/material/Paper'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import { visuallyHidden } from '@mui/utils'
+import { ROLE } from '@/services/const'
 // import Checkbox from '@mui/material/Checkbox'
 // import { alpha } from '@mui/material/styles'
 // import Toolbar from '@mui/material/Toolbar'
@@ -23,6 +25,7 @@ import { visuallyHidden } from '@mui/utils'
 
 interface Data {
   name: string
+  role: ROLE
   phone: string
   email: string
   location: string
@@ -78,6 +81,12 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: true,
     label: "Прізвище Ім'я",
+  },
+  {
+    id: 'role',
+    numeric: true,
+    disablePadding: false,
+    label: '',
   },
   {
     id: 'phone',
@@ -222,6 +231,7 @@ interface IManager {
     phone: string
     email: string
     location: string
+    role: ROLE
     isActive: boolean
 }
 
@@ -303,8 +313,6 @@ const EnhancedTable = ({ rows = [], updateManagers }: IEnhancedTable) => {
     [order, orderBy, page, rowsPerPage, rows],
   )
 
-  // (event: ChangeEvent<HTMLInputElement>, checked: boolean)
-
   const [isDisabled, setIsDisabled] = React.useState(false)
 
   const toggleIsActiveManager = (id: string) => async (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
@@ -316,11 +324,8 @@ const EnhancedTable = ({ rows = [], updateManagers }: IEnhancedTable) => {
         const updateRes = await updateManagers()
         setIsDisabled(false)
       }
-
-
     } catch (error) {
       console.log('toggleIsActiveManager error:', error);
-
     }
   }
 
@@ -366,6 +371,9 @@ const EnhancedTable = ({ rows = [], updateManagers }: IEnhancedTable) => {
                       /> */}
                     </TableCell>
                     <TableCell component="th" id={labelId} scope="row" padding="none">{row.name}</TableCell>
+                    <TableCell align="right">
+                      {row.role === ROLE.ADMIN ? <Chip label="Admin" color="primary" size="small" /> : null}
+                    </TableCell>
                     <TableCell align="right">{row.phone}</TableCell>
                     <TableCell align="right">{row.email}</TableCell>
                     <TableCell align="right">{row.location}</TableCell>

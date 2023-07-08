@@ -14,8 +14,11 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import PasswordTextField from '@/components/PasswordTextField'
 import EnhancedTable from '@/components/Table'
+import BasicSelect from '@/components/BasicSelect'
 import { isValidPhone } from '@/app/frontend-services/validation'
 import { parsePhoneNumber } from 'libphonenumber-js'
+import { ROLE } from '@/services/const'
+import { availableManagerRoles } from '@/app/frontend-services/data'
 
 interface IManager {
   id: string
@@ -24,6 +27,7 @@ interface IManager {
   phone: string
   email: string
   location: string
+  role: ROLE
   isActive: boolean
 }
 
@@ -50,6 +54,7 @@ interface IRegisterManagerData {
   email: string
   password: string
   location: string
+  role: ROLE
 }
 
 yup.addMethod<any>(yup.Schema, 'isValidPhone', isValidPhone)
@@ -60,6 +65,7 @@ const schema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required(),
   location: yup.string().required(),
+  role: yup.string().required(),
 }).required()
 
 interface IAdminManagers {
@@ -76,6 +82,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
       email: '',
       password: '',
       location: '',
+      role: ROLE.MANAGER,
     },
     resolver: yupResolver<IRegisterManagerData>(schema as any),
   })
@@ -117,6 +124,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
     phone: m.phone,
     email: m.email,
     location: m.location,
+    role: m.role,
     isActive: m.isActive,
   }))
 
@@ -132,7 +140,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
           >
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={style}>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <Controller
                     name="firstName"
                     control={control}
@@ -150,7 +158,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <Controller
                     name="lastName"
                     control={control}
@@ -167,7 +175,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <Controller
                     name="location"
                     control={control}
@@ -180,6 +188,21 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                         helperText={errors.location?.message}
                         fullWidth
                         required
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name="role"
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <BasicSelect
+                        name="role"
+                        menuItems={availableManagerRoles}
+                        onChange={(id) => onChange(id as ROLE)}
+                        value={value ?? ''}
+                        label="Роль"
                       />
                     )}
                   />

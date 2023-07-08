@@ -29,14 +29,14 @@ export async function PATCH(req: Request) {
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        console.log('POST manager body:', body);
+        console.log('Create manager body:', body);
 
         const transaction = await prisma.$transaction(async (ctx) => {
             const managerAccount = await ctx.account.create({
                 data: {
                     email: body.email,
                     password: await bcryptPassword(body.password),
-                    role: ROLE.MANAGER,
+                    role: body.role || ROLE.MANAGER,
                 }
             })
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
             const isSentEmail = await sendMail({ subject: 'Дані для входу в Спільно. Unicef', toEmail: managerAccount.email, html })
 
             const data = {
-                manager: { ...manager, email: managerAccount.email, isSentEmail },
+                manager: { ...manager, email: managerAccount.email, role: managerAccount.role, isSentEmail },
             }
             return { data }
         })
@@ -80,6 +80,7 @@ export const GET = (req: Request) => verifyJwtAuth(req, async () => {
                 account: {
                     select: {
                         email: true,
+                        role: true
                     }
                 }
             }
@@ -90,6 +91,7 @@ export const GET = (req: Request) => verifyJwtAuth(req, async () => {
             lastName: manager.lastName,
             phone: manager.phone,
             email: manager.account.email,
+            role: manager.account.role,
             location: manager.location,
             isActive: manager.isActive,
         }))
