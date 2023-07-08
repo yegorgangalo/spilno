@@ -12,8 +12,8 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://spilno_admin:Very_interesting_project!@spilnodb1.ccdv13yqnmn8.eu-north-1.rds.amazonaws.com:3306/spilnodb1"
-  // url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
+  // url      = "mysql://spilno_admin:Very_interesting_project!@spilnodb1.ccdv13yqnmn8.eu-north-1.rds.amazonaws.com:3306/spilnodb1"
 }
 
 enum ROLE {
