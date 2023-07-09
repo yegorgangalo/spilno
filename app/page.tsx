@@ -7,6 +7,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Tooltip from '@mui/material/Tooltip'
 import Checkbox from '@mui/material/Checkbox'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -27,6 +28,7 @@ import { GENDER, MESSENGER } from '@/app/frontend-services/enums'
 import { genderList, messengerList } from '@/app/frontend-services/data'
 import { Moment } from 'moment'
 import DateTextField from '@/components/DateTextField'
+import dayjs from 'dayjs'
 
 interface ISignUpData {
   parentFirstName: string
@@ -68,6 +70,7 @@ export default function SignUp() {
 
   const [apiError, setApiError] = React.useState<IApiError | null>(null)
   const [loading, setLoading] = React.useState(false)
+  const [isOpenToolTip, setIsOpenToolTip] = React.useState(false)
 
   const { control, handleSubmit, formState: { errors } } = useForm<ISignUpData>({
     defaultValues: {
@@ -79,8 +82,8 @@ export default function SignUp() {
       childFirstName: '',
       childLastName: '',
       childCity: '',
-      childDob: '',
-      childGender: '',
+      childDob: dayjs('2015-01-01'),
+      childGender: GENDER.MALE,
       childAllowPhoto: true,
       terms: true,
     },
@@ -135,7 +138,7 @@ export default function SignUp() {
           <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Typography component="h2" variant="h6">Інформація про опікуна</Typography>
+                <Typography component="h2" variant="h6">Інформація батька/матері або опікуна</Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
@@ -194,15 +197,19 @@ export default function SignUp() {
                   name="parentEmail"
                   control={control}
                   render={({ field: { onChange, value } }) => (
-                    <TextField
-                      onChange={onChange}
-                      value={value!}
-                      label="Електронна пошта"
-                      error={!!errors.parentEmail}
-                      helperText={!!errors.parentEmail ? 'Введіть емейл' : ''}
-                      fullWidth
-                      required
-                    />
+                    <Tooltip title="На вказану електронну пошту вам прийде QR-code" open={isOpenToolTip}>
+                      <TextField
+                        onFocus={() => setIsOpenToolTip(true)}
+                        onBlur={() => setIsOpenToolTip(false)}
+                        onChange={onChange}
+                        value={value!}
+                        label="Електронна пошта"
+                        error={!!errors.parentEmail}
+                        helperText={!!errors.parentEmail ? 'Введіть ваш емейл' : ''}
+                        fullWidth
+                        required
+                        />
+                    </Tooltip>
                   )}
                 />
               </Grid>

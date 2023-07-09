@@ -1,6 +1,6 @@
 export enum GENDER {
-  MALE = 'жін',
-  FEMALE = 'чол',
+  MALE = 'чол',
+  FEMALE = 'жін',
 }
 
 export enum MESSENGER {
