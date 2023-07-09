@@ -28,6 +28,7 @@ import { GENDER, MESSENGER } from '@/app/frontend-services/enums'
 import { genderList, messengerList } from '@/app/frontend-services/data'
 import { Moment } from 'moment'
 import DateTextField from '@/components/DateTextField'
+import dayjs from 'dayjs'
 
 interface ISignUpData {
   parentFirstName: string
@@ -81,8 +82,8 @@ export default function SignUp() {
       childFirstName: '',
       childLastName: '',
       childCity: '',
-      childDob: '',
-      childGender: '',
+      childDob: dayjs('2015-01-01'),
+      childGender: GENDER.MALE,
       childAllowPhoto: true,
       terms: true,
     },
