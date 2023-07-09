@@ -19,7 +19,7 @@ const DateTextField = ({ onChange, value, error, helperText }: IDateTextFieldPro
                 onChange(event as Moment);
               }}
               value={value}
-              label="Дата народження"
+              label='Дата народження'
               // @ts-ignore
               error={error}
               helperText={error ? helperText : ''}
@@ -31,4 +31,3 @@ const DateTextField = ({ onChange, value, error, helperText }: IDateTextFieldPro
 }
 
 export default DateTextField
-

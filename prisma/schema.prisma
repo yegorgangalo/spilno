@@ -97,6 +97,8 @@ model CourseChildRelation {
   childId   Int
   visitTime DateTime
   createdAt DateTime @default(now())
+
+  @@unique([courseId, childId, visitTime])
 }
 
 model Manager {

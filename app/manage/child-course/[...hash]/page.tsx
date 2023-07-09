@@ -7,6 +7,9 @@ import dayjs, { Dayjs } from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import Alert, { AlertColor } from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import LinearProgress from '@mui/material/LinearProgress'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
@@ -18,52 +21,30 @@ import Button from '@mui/material/Button'
 import MenuBar from '@/components/MenuBar'
 import BasicSelect from '@/components/BasicSelect'
 import { useFetchCourses } from '@/hooks/useFetchCourses'
-
-const calculateFullYears = (dateString: string) => {
-  const today = new Date()
-  const pastDate = new Date(dateString)
-  const yearsDiff = today.getFullYear() - pastDate.getFullYear()
-
-  // Check if the current month and day are before the pastDate's month and day
-  if (
-    today.getMonth() < pastDate.getMonth() ||
-    (today.getMonth() === pastDate.getMonth() && today.getDate() < pastDate.getDate())
-  ) {
-    return yearsDiff - 1
-  }
-
-  return yearsDiff
-}
-
-interface CreateAgeLimitsNotificationProps {
-  lowerAgeLimit: number,
-  upperAgeLimit: number,
-}
-
-const createAgeLimitsNotification = ({ lowerAgeLimit, upperAgeLimit }: CreateAgeLimitsNotificationProps) => {
-  if (lowerAgeLimit && upperAgeLimit) {
-    return `${lowerAgeLimit}-${upperAgeLimit} років`
-  }
-  if (lowerAgeLimit && !upperAgeLimit) {
-    return `з ${lowerAgeLimit} років`
-  }
-  if (!lowerAgeLimit && upperAgeLimit) {
-    return `до ${upperAgeLimit} років`
-  }
-  return ''
-}
+import { calculateFullYears, createAgeLimitsNotification, getCurrentTimeRoundedUpToTensMinutes } from '@/app/frontend-services/helpers'
 
 interface ManageChildCoursePageProps {
     params: { hash: string }
 }
 
+interface IApiError extends Error {
+  type: AlertColor
+}
+
 const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
+  const [loading, setLoading] = React.useState(false)
+  const [apiError, setApiError] = React.useState<IApiError | null>(null)
   const [selectedCourseId, setSelectedCourseId] = React.useState<number | string>('')
-  const [visitTime, setVisitTime] = React.useState<Dayjs | null>(dayjs(new Date()))
+  const [visitTime, setVisitTime] = React.useState<Dayjs | null>(dayjs(getCurrentTimeRoundedUpToTensMinutes()))
 
   const courseResponse = useFetchCourses()
 
   const session = useSession()
+
+  React.useEffect(() => {
+    apiError && setTimeout(() => setApiError(null), 3000)
+  }, [apiError])
+
   const accessToken = session.data?.user.accessToken
 
   const courseData = courseResponse.data?.data
@@ -75,7 +56,12 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
   const { id: childId, firstName, lastName, dob, gender, city, allowPhoto } = decodedData.child
 
   const assignChildToCourse = async () => {
+    apiError && setApiError(null)
+    setLoading(true)
     try {
+      // visitTime?.format().split('+')[0] + '.000Z'
+      // visitTime?.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+
       const response = await fetch('/api/assign-child-course', {
         body: JSON.stringify({ courseId: selectedCourseId, childId, visitTime }),
         method: 'POST',
@@ -87,13 +73,16 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
       const signupResult = await response.json()
       console.log('signupResult=', signupResult)
 
-      if (signupResult) {
-        // mutate('/api/course')
-        // reset()
+      if (signupResult.success) {
+        setSelectedCourseId('')
+        setVisitTime(dayjs(getCurrentTimeRoundedUpToTensMinutes()))
+        setApiError({ message: 'Успішно зареєстровано', type: 'success'} as IApiError)
       }
     } catch (error) {
       console.log(error)
+      setApiError({ message: (error as Error).message, type: 'error'} as IApiError)
     }
+    setLoading(false)
   }
 
   const courseList = courseData?.map(({ id, title, lowerAgeLimit, upperAgeLimit }) => ({
@@ -103,6 +92,10 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
 
   return (<>
       <MenuBar/>
+      {loading
+        ? <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%' }}>
+          <LinearProgress/>\
+        </Box> : null}
       <Container component="main" maxWidth="xs">
           <Box
             sx={{
@@ -157,6 +150,12 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
                   Зареєструвати на майстер-клас
                 </Button>
               </Grid>
+              {apiError ? <Grid item xs={12}>
+                <Alert severity={apiError.type}>
+                  <AlertTitle>{apiError.type}</AlertTitle>
+                  {apiError.message}
+                </Alert>
+              </Grid> : null}
             </Grid>
           </Box>
       </Container>
