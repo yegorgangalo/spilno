@@ -6,7 +6,7 @@ CREATE TABLE `Account` (
     `role` ENUM('ADMIN', 'MANAGER', 'PARENT', 'CHILD') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `Account_email_key`(`email`),
+    UNIQUE INDEX `Account_email_role_key`(`email`, `role`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -77,6 +77,7 @@ CREATE TABLE `CourseChildRelation` (
     `visitTime` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `CourseChildRelation_courseId_childId_visitTime_key`(`courseId`, `childId`, `visitTime`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -91,6 +92,7 @@ CREATE TABLE `Manager` (
     `accountId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `Manager_phone_key`(`phone`),
     UNIQUE INDEX `Manager_accountId_key`(`accountId`),
     UNIQUE INDEX `Manager_firstName_lastName_phone_key`(`firstName`, `lastName`, `phone`),
     PRIMARY KEY (`id`)
