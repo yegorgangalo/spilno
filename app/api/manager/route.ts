@@ -51,7 +51,12 @@ export async function POST(req: Request) {
                 }
             })
 
-            const html = `<p>Login: ${body.email}</br>Password: ${body.password}</p>`
+            const html = `<div>
+                            <p>Вітаємо в команді "Спільно"</p>
+                            <p>Ваші дані для входу:</p>
+                            <p>Логін: <strong>${body.email}</strong></p>
+                            <p>Пароль: <strong>${body.password}</strong></p>
+                        </div>`
 
             const isSentEmail = await sendMail({ subject: 'Дані для входу в Спільно. Unicef', toEmail: managerAccount.email, html })
 
