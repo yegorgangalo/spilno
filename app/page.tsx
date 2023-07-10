@@ -116,14 +116,13 @@ export default function SignUp() {
 
   return (
     <>
-    <Head>
-      <title>Spilno. Unicef</title>
-      <meta property="og:title" content="My page title" key="title" />
-    </Head>
-      {loading
-        ? <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%' }}>
-          <LinearProgress/>\
-        </Box> : null}
+      <Head>
+        <title>Spilno. Unicef</title>
+        <meta property="og:title" content="My page title" key="title" />
+      </Head>
+      {!!loading && <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%' }}>
+        <LinearProgress/>\
+      </Box>}
       <Container component="main" maxWidth="xs">
         <Box
           sx={{

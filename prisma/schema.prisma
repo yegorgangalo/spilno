@@ -4,6 +4,7 @@
 //CMD+SHIFT+P developer -> restart window
 //remove node_modules and npm install
 //npx prisma studio
+//npx prisma migrate reset
 
 generator client {
   provider = "prisma-client-js"
@@ -24,7 +25,7 @@ enum ROLE {
 
 model Account {
   id        Int       @id @default(autoincrement())
-  email     String    @unique
+  email     String
   password  String
   role      ROLE
   createdAt DateTime  @default(now())
@@ -32,7 +33,7 @@ model Account {
   Child     Child[]
   Manager   Manager[]
 
-  // @@unique([email, role])
+  @@unique([email, role])
 }
 
 model Parent {
@@ -105,8 +106,7 @@ model Manager {
   id        String   @id @default(uuid())
   firstName String
   lastName  String
-  // phone     String   @unique
-  phone     String
+  phone     String   @unique
   location  String
   isActive  Boolean
   account   Account  @relation(fields: [accountId], references: [id])

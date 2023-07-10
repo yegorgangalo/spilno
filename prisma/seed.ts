@@ -10,7 +10,6 @@ const bcryptPassword = (password: string) => {
   }
 
 async function runSeedDb() {
-
     const transaction = await prisma.$transaction(async (ctx: typeof PrismaClient) => {
         const managerAccount = await ctx.account.create({
             data: {
@@ -31,34 +30,13 @@ async function runSeedDb() {
             }
         })
 
-        // const html = `<p>Login: gangaloyegor@gmail.com</br>Password: Spilno2023</p>`
-
-        // const isSentEmail = await sendMail({ subject: 'Дані для входу в Спільно. Unicef', toEmail: 'gangaloyegor@gmail.com', html })
-
         const data = {
-            manager: { ...manager, email: managerAccount.email, /* isSentEmail */ },
+            manager: { ...manager, email: managerAccount.email },
         }
         return { data }
     })
 
     console.log('seed transaction=', transaction);
-
-    // const alice = await prisma.account.upsert({
-    //   where: { email: 'alice@prisma.io' },
-    //   update: {},
-    //   create: {
-    //     email: 'alice@prisma.io',
-    //     name: 'Alice',
-    //     posts: {
-    //       create: {
-    //         title: 'Check out Prisma with Next.js',
-    //         content: 'https://www.prisma.io/nextjs',
-    //         published: true,
-    //       },
-    //     },
-    //   },
-    // })
-
   }
   runSeedDb()
     .then(async () => {
