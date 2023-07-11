@@ -32,6 +32,17 @@ export async function POST(req: Request) {
         console.log('Create manager body:', body);
 
         const transaction = await prisma.$transaction(async (ctx) => {
+            const existedManagerAccount = await ctx.account.findMany({
+                where: {
+                    email: body.email,
+                    OR: [{ role: ROLE.ADMIN }, { role: ROLE.MANAGER}],
+                }
+            })
+
+            if (existedManagerAccount.length) {
+                throw Error('Account_email_key')
+            }
+
             const managerAccount = await ctx.account.create({
                 data: {
                     email: body.email,
@@ -75,8 +86,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ data: transaction.data, success: true })
     } catch (error) {
         const message = (error as Error).message
+        if (message.includes('Manager_phone_key')) {
+            return NextResponse.json({ error: { message: 'Менеджер чи адміністратор з даним телефоном вже зареєстрований', type: 'info' }, success: false })
+        }
         if (message.includes('Account_email_key')) {
-            return NextResponse.json({ error: { message: 'Даний email вже зареєстрований', type: 'info' }, success: false })
+            return NextResponse.json({ error: { message: 'Менеджер чи адміністратор з даним email вже зареєстрований', type: 'info' }, success: false })
         }
         return NextResponse.json({ error, success: false })
     }
