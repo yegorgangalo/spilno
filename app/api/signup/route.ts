@@ -147,8 +147,14 @@ export async function POST(req: NextRequest) {
     const encodedData = encodeURIComponent(encode(JSON.stringify(transaction.data)))
     const manageChildCoursePageUrl = `${process.env.BASE_URL}/manage/child-course/${encodedData}`
     const QrCodeImageUrl = await QRCode.toDataURL(manageChildCoursePageUrl)
-    const html = `<p>QR-code для ${body.childFirstName} ${body.childLastName}:</p>
-                  </br><img src="${QrCodeImageUrl}" width="512" height="512">`
+    const html = `<div>
+                    <p>Вітаємо. Ваш QR-code для</p>
+                    <p>${body.childFirstName} ${body.childLastName}:</p>
+                    </br>
+                    <img src="${QrCodeImageUrl}" width="512" height="512">
+                    </br>
+                    <img src="logo_horizontal.svg" alt='logo' width="150" height="100">
+                  </div>`
     const isSentEmail = await sendMail({ subject: 'Спільно. Unicef. QR-code', toEmail: body.parentEmail, html })
 
     return NextResponse.json({ data: transaction.data, isSentEmail, success: true })
