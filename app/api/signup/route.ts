@@ -31,10 +31,6 @@ interface Child {
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('signup req.nextUrl=', req.nextUrl);
-    console.log('signup req.nextUrl.basePath=', req.nextUrl.basePath);
-    console.log('signup req.nextUrl.domainLocale=', req.nextUrl.domainLocale);
-    console.log('signup req.nextUrl.locale=', req.nextUrl.locale);
     const body = await req.json()
     console.log('signup incoming data:', { body });
 
@@ -148,14 +144,13 @@ export async function POST(req: NextRequest) {
         return { data }
     })
 
-    const reqUrl = new URL(req.url)
-    console.log('signup QR-code reqUrl=', reqUrl);
     const encodedData = encodeURIComponent(encode(JSON.stringify(transaction.data)))
-    const QrCodeUrl = await QRCode.toDataURL(`${reqUrl.origin}/qrcode/${encodedData}`)
+    const qrCodePageUrl = `${process.env.BASE_URL}/qrcode/${encodedData}`
+    const QrCodeImageUrl = await QRCode.toDataURL(qrCodePageUrl)
     const html = `<p>QR-code для ${body.childFirstName} ${body.childLastName}:</p>
-                  </br><img src="${QrCodeUrl}" width="512" height="512"></br></br>
+                  </br><img src="${QrCodeImageUrl}" width="512" height="512"></br></br>
                   <p>Або за посиланням:</p></br>
-                  <a href=${reqUrl.origin}/qrcode/${encodedData}>подивитись qr-code</a>`
+                  <a href=${qrCodePageUrl}>подивитись qr-code</a>`
     const isSentEmail = await sendMail({ subject: 'Спільно. Unicef. QR-code', toEmail: body.parentEmail, html })
 
     return NextResponse.json({ data: transaction.data, isSentEmail, success: true })
