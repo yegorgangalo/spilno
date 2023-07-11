@@ -15,7 +15,8 @@ const authConfig: AuthOptions = {
         if (!credentials?.email || !credentials.password) {
           return null
         }
-        const res = await fetch(`${req.headers?.origin}/api/signin`, {
+        // const res = await fetch(`${req.headers?.origin}/api/signin`, {
+        const res = await fetch(`${process.env.BASE_URL}/api/signin`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -23,6 +24,8 @@ const authConfig: AuthOptions = {
             password: credentials?.password,
           }),
         })
+        console.log('authConfig:', { res, url: `${process.env.BASE_URL}/api/signin` });
+
         const { data: user } = await res.json()
         return user as User || null
       }
