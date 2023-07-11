@@ -31,6 +31,7 @@ interface Child {
 
 export async function POST(req: Request) {
   try {
+    console.log('signup req=', req);
     const body = await req.json()
     console.log('signup incoming data:', { body });
 
