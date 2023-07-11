@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import dayjs, { Dayjs } from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import { TimeField } from '@mui/x-date-pickers/TimeField'
 import Alert, { AlertColor } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -191,11 +191,11 @@ const ManageChildrenCoursesPage = () => {
               </Grid>
               <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <TimePicker
+                  <TimeField
                     label='Час відвідування майстер-класу'
                     value={visitTime}
                     onChange={(newTime) => setVisitTime(newTime)}
-                    // disablePast
+                    format="HH:mm"
                     sx={{ width: '100%' }}
                   />
                 </LocalizationProvider>

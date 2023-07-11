@@ -145,6 +145,7 @@ export async function POST(req: Request) {
     })
 
     const reqUrl = new URL(req.url)
+    console.log('signup QR-code reqUrl=', reqUrl);
     const encodedData = encodeURIComponent(encode(JSON.stringify(transaction.data)))
     const QrCodeUrl = await QRCode.toDataURL(`${reqUrl.origin}/qrcode/${encodedData}`)
     const html = `<p>QR-code для ${body.childFirstName} ${body.childLastName}:</p>
