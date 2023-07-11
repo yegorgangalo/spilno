@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { encode } from 'js-base64'
 import QRCode from 'qrcode'
 import { prisma } from '@/lib/prisma'
@@ -29,9 +29,12 @@ interface Child {
     createdAt : Date,
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    console.log('signup req=', req);
+    console.log('signup req.nextUrl=', req.nextUrl);
+    console.log('signup req.nextUrl.basePath=', req.nextUrl.basePath);
+    console.log('signup req.nextUrl.domainLocale=', req.nextUrl.domainLocale);
+    console.log('signup req.nextUrl.locale=', req.nextUrl.locale);
     const body = await req.json()
     console.log('signup incoming data:', { body });
 
