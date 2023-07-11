@@ -40,7 +40,7 @@ const QrCode = (props: QrCodeProps) => {
                     <QRCodeCanvas value={manageChildCourseUrl} size={512} />
                   </CardContent>
                 </Card>
-                <Link href={`/manage/child-course/${encodedData}`}>manage/child-course/</Link>
+                {/* <Link href={`/manage/child-course/${encodedData}`}>manage/child-course/</Link> */}
             </Box>
         </Container>
     )

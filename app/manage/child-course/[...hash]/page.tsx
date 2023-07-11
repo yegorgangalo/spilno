@@ -23,7 +23,7 @@ import BasicSelect from '@/components/BasicSelect'
 import { useFetchCourses } from '@/hooks/useFetchCourses'
 import { calculateFullYears, createAgeLimitsNotification, getCurrentTimeRoundedUpToTensMinutes } from '@/app/frontend-services/helpers'
 
-interface ManageChildCoursePageProps {
+interface ManageChildCourseByHashPageProps {
     params: { hash: string }
 }
 
@@ -31,7 +31,7 @@ interface IApiError extends Error {
   type: AlertColor
 }
 
-const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
+const ManageChildCourseByHashPage = (props: ManageChildCourseByHashPageProps) => {
   const [loading, setLoading] = React.useState(false)
   const [apiError, setApiError] = React.useState<IApiError | null>(null)
   const [selectedCourseId, setSelectedCourseId] = React.useState<number | string>('')
@@ -162,4 +162,4 @@ const ManageChildCoursePage = (props: ManageChildCoursePageProps) => {
   </>)
 }
 
-export default  ManageChildCoursePage
+export default  ManageChildCourseByHashPage
