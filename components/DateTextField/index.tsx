@@ -25,8 +25,8 @@ const DateTextField = ({ onChange, value, error, helperText }: IDateTextFieldPro
               error={error}
               helperText={error ? helperText : ''}
               disableFuture
-              fullWidth
-              required
+              sx={{ width: '100%' }}
+              format='DD/MM/YYYY'
             />
         </LocalizationProvider>
     )
