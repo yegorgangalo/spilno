@@ -29,7 +29,7 @@ export const sendMail = async ({ subject, toEmail, html }: ISendEmail) => {
     // })
 
     const mailOptions = {
-      from: `mail@${process.env.BASE_URL}`,
+      from: `mail@${process.env.HOST_NAME}`,
       to: toEmail,
       subject: subject,
       attachDataUrls: true, //to accept base64 content in messsage

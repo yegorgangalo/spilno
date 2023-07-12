@@ -61,12 +61,7 @@ const SignInPage = () => {
       redirect: true,
       callbackUrl
     });
-
     console.log('signinResult=', signinResult);
-
-    if (!signinResult?.ok) {
-      console.log('error signin', signinResult);
-    }
   }
 
   const showNoAccessMessage = searchParams.get('message') === 'noaccess'
