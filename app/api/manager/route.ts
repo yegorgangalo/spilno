@@ -32,14 +32,14 @@ export async function POST(req: Request) {
         console.log('Create manager body:', body);
 
         const transaction = await prisma.$transaction(async (ctx) => {
-            const existedManagerAccount = await ctx.account.findMany({
+            const existedManagerAccount = await ctx.account.findFirst({
                 where: {
                     email: body.email,
                     OR: [{ role: ROLE.ADMIN }, { role: ROLE.MANAGER}],
                 }
             })
 
-            if (existedManagerAccount.length) {
+            if (existedManagerAccount) {
                 throw Error('Account_email_key')
             }
 
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
                 data: {
                     email: body.email,
                     password: await bcryptPassword(body.password),
-                    role: body.role || ROLE.MANAGER,
+                    role: body.role,
                 }
             })
 

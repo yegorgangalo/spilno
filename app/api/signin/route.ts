@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     const account = await prisma.account.findFirst({
         where: {
             email: body.email,
+            OR: [{ role: ROLE.ADMIN }, { role: ROLE.MANAGER }]
         }
     })
 
