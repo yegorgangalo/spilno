@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
                       <img src="${QrCodeImageUrl}" width="512" height="512">
                     </div>
                     <div>
-                      <img src="https://${process.env.BASE_URL}/logo.png" alt='logo' width="202" height="124">
+                      <img src="${process.env.BASE_URL}/logo.png" alt='logo' width="202" height="124">
                     </div>
                   </div>`
     const isSentEmail = await sendMail({ subject: 'Спільно. Unicef. QR-code', toEmail: body.parentEmail, html })
