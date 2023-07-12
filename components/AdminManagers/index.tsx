@@ -16,6 +16,7 @@ import PasswordTextField from '@/components/PasswordTextField'
 import EnhancedTable from '@/components/Table'
 import BasicSelect from '@/components/BasicSelect'
 import { isValidPhone } from '@/app/frontend-services/validation'
+import { isEmptyObject, getEventWithTrimTargetValue } from '@/app/frontend-services/helpers'
 import { parsePhoneNumber } from 'libphonenumber-js'
 import { ROLE } from '@/services/const'
 import { IManager } from '@/app/ts/interfaces/IManager.interface'
@@ -31,10 +32,6 @@ const style = {
   border: '1px solid grey',
   boxShadow: 24,
   p: 4,
-}
-
-const isEmptyObject = (obj: object) => {
-  return typeof obj === 'object' && !Object.keys(obj).length
 }
 
 type OmittedProps = 'id' | 'isActive'
@@ -131,7 +128,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Ім'я"
                         error={!!errors.firstName}
@@ -149,7 +146,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Прізвище"
                         error={!!errors.lastName}
@@ -166,7 +163,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Локація"
                         error={!!errors.location}
@@ -198,7 +195,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Телефон"
                         error={!!errors.phone}
@@ -215,7 +212,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Електронна пошта"
                         error={!!errors.email}
@@ -232,7 +229,7 @@ const AdminManagers = ({ managers }: IAdminManagers) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <PasswordTextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         error={!!errors.password}
                         helperText={errors.password?.message}

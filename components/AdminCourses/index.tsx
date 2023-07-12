@@ -14,7 +14,7 @@ import ControlledAccordions from '@/components/ControlledAccordions'
 import BasicSelect from '@/components/BasicSelect'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { isEmptyObject } from '@/app/frontend-services/helpers'
+import { isEmptyObject, getEventWithTrimTargetValue } from '@/app/frontend-services/helpers'
 import { ageList } from '@/app/frontend-services/data'
 
 const style = {
@@ -114,7 +114,7 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label='Назва курсу'
                         margin='normal'
@@ -133,7 +133,7 @@ const AdminCourses = ({ courses }: IAdminCoursesProps) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Опис курсу"
                         margin="normal"

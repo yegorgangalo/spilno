@@ -10,50 +10,54 @@ interface IRequestBody {
 }
 
 export async function POST(req: Request) {
-    const body: IRequestBody = await req.json()
-    console.log('|-|>>>>>>>>>>>- signin body=', body);
+    try {
+        const body: IRequestBody = await req.json()
+        console.log('|-|>>>>>>>>>>>- signin request body=', body);
 
-    const account = await prisma.account.findFirst({
-        where: {
-            email: body.email,
-            OR: [{ role: ROLE.ADMIN }, { role: ROLE.MANAGER }]
-        }
-    })
-
-    console.log('|-|>>>>>>>>>>>- signIn account=', account);
-
-
-    if (!account) {
-        return NextResponse.json({ error: { message: 'Wrong credentials'} })
-    }
-
-    const isSamePassword = await comparePasswords(body.password, account.password)
-
-    console.log('|-|>>>>>>>>>>>- signIn isSamePassword=', isSamePassword);
-
-    if (!isSamePassword) {
-        return NextResponse.json({ error: { message: 'Wrong credentials' } })
-    }
-
-    if ([ROLE.MANAGER, ROLE.ADMIN].includes(account.role as ROLE)) {
-        const manager = await prisma.manager.findFirst({
+        const account = await prisma.account.findFirst({
             where: {
-                accountId: account.id,
+                email: body.email,
+                OR: [{ role: ROLE.ADMIN }, { role: ROLE.MANAGER }]
             }
         })
 
-        console.log('|-|>>>>>>>>>>>- signIn manager=', manager);
+        console.log('|-|>>>>>>>>>>>- signIn account=', account);
 
-        if (!manager?.isActive) {
-            return NextResponse.json({ error: { message: 'Access denied' } })
+        if (!account) {
+            return NextResponse.json({ error: { message: 'wrong_credentials'} })
         }
 
-        const userWithoutPassword = { ...manager, email: account.email, role: account.role }
+        const isSamePassword = await comparePasswords(body.password, account.password)
 
-        const accessToken = signJwtAccessToken(userWithoutPassword)
+        console.log('|-|>>>>>>>>>>>- signIn isSamePassword=', isSamePassword);
 
-        return NextResponse.json({ data: { ...userWithoutPassword, accessToken } })
+        if (!isSamePassword) {
+            return NextResponse.json({ error: { message: 'wrong_credentials' } })
+        }
+
+        if ([ROLE.MANAGER, ROLE.ADMIN].includes(account.role as ROLE)) {
+            const manager = await prisma.manager.findFirst({
+                where: {
+                    accountId: account.id,
+                }
+            })
+
+            console.log('|-|>>>>>>>>>>>- signIn manager=', manager);
+
+            if (!manager?.isActive) {
+                return NextResponse.json({ error: { message: 'access_denied' } })
+            }
+
+            const userWithoutPassword = { ...manager, email: account.email, role: account.role }
+
+            const accessToken = signJwtAccessToken(userWithoutPassword)
+
+            return NextResponse.json({ data: { ...userWithoutPassword, accessToken } })
+        }
+
+        return NextResponse.json({ error: { message: 'unhandled' } })
+    } catch (error) {
+        console.log('Signin error', error);
+        return NextResponse.json({ error: { message: (error as Error).message } }, { status: 500 })
     }
-
-  return NextResponse.json({ error: { message: 'unhandled' } })
 }

@@ -20,7 +20,7 @@ import Button from '@mui/material/Button'
 import MenuBar from '@/components/MenuBar'
 import BasicSelect from '@/components/BasicSelect'
 import { useFetchCourses } from '@/hooks/useFetchCourses'
-import { calculateFullYears, createAgeLimitsNotification, getCurrentTimeRoundedUpToTensMinutes } from '@/app/frontend-services/helpers'
+import * as helpers from '@/app/frontend-services/helpers'
 
 interface IApiError extends Error {
   type: AlertColor
@@ -44,7 +44,7 @@ const ManageChildrenCoursesPage = () => {
   const [loading, setLoading] = React.useState(false)
   const [apiError, setApiError] = React.useState<IApiError | null>(null)
   const [selectedCourseId, setSelectedCourseId] = React.useState<number | string>('')
-  const [visitTime, setVisitTime] = React.useState<Dayjs | null>(dayjs(getCurrentTimeRoundedUpToTensMinutes()))
+  const [visitTime, setVisitTime] = React.useState<Dayjs | null>(dayjs(helpers.getCurrentTimeRoundedUpToTensMinutes()))
 
   const courseResponse = useFetchCourses()
 
@@ -104,7 +104,7 @@ const ManageChildrenCoursesPage = () => {
 
       if (signupResult.success) {
         setSelectedCourseId('')
-        setVisitTime(dayjs(getCurrentTimeRoundedUpToTensMinutes()))
+        setVisitTime(dayjs(helpers.getCurrentTimeRoundedUpToTensMinutes()))
         setApiError({ message: 'Успішно зареєстровано', type: 'success'} as IApiError)
       }
     } catch (error) {
@@ -116,7 +116,7 @@ const ManageChildrenCoursesPage = () => {
 
   const courseList = courseData?.map(({ id, title, lowerAgeLimit, upperAgeLimit }) => ({
     id,
-    title: `${title}: ${createAgeLimitsNotification({ lowerAgeLimit, upperAgeLimit })}`
+    title: `${title}: ${helpers.createAgeLimitsNotification({ lowerAgeLimit, upperAgeLimit })}`
   })) || []
 
   return (<>
@@ -141,7 +141,7 @@ const ManageChildrenCoursesPage = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) => setFirstName(helpers.getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>).target.value)}
                   value={firstName}
                   label="Ім'я"
                   fullWidth
@@ -150,7 +150,7 @@ const ManageChildrenCoursesPage = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => setLastName(helpers.getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>).target.value)}
                   value={lastName}
                   label="Прізвище"
                   fullWidth
@@ -173,7 +173,7 @@ const ManageChildrenCoursesPage = () => {
                   <CardContent>
                     <Typography component="h6" variant="h6">{`Ім'я: ${child.firstName}`}</Typography>
                     <Typography component="h6" variant="h6">{`Прізвище: ${child.lastName}`}</Typography>
-                    <Typography component="h6" variant="h6">{`Вік: ${calculateFullYears(child.dob)} років`}</Typography>
+                    <Typography component="h6" variant="h6">{`Вік: ${helpers.calculateFullYears(child.dob)} років`}</Typography>
                     <Typography component="h6" variant="h6">{`Стать: ${child.gender}`}</Typography>
                     <Typography component="h6" variant="h6">{`Місто: ${child.city}`}</Typography>
                     <Typography component="h6" variant="h6">{`Дозвіл на фото: ${child.allowPhoto ? 'так' : 'ні'}`}</Typography>
