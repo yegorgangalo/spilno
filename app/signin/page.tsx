@@ -15,6 +15,7 @@ import Grid from '@mui/material/Grid'
 import PasswordTextField from '@/components/PasswordTextField'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { ROLE } from '@/services/const'
 
 const isEmptyObject = (obj: object) => {
   return typeof obj === 'object' && !Object.keys(obj).length
@@ -45,11 +46,8 @@ const SignInPage = () => {
 
   React.useEffect(() => {
     console.log('session?.user=', session?.user);
-    console.log("searchParams.has('message')=", searchParams.has('message'));
     if (session?.user && !searchParams.has('message')) {
-      console.log('router.push try work');
-
-      // router.push('/manage/child-course')
+      router.push(session?.user.role === ROLE.ADMIN ? '/admin' : '/manage/child-course')
     }
   }, [router, searchParams, session])
 
