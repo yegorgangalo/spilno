@@ -16,10 +16,7 @@ import PasswordTextField from '@/components/PasswordTextField'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ROLE } from '@/services/const'
-
-const isEmptyObject = (obj: object) => {
-  return typeof obj === 'object' && !Object.keys(obj).length
-}
+import { isEmptyObject, getEventWithTrimTargetValue } from '@/app/frontend-services/helpers'
 
 interface ISigninManagerData {
   email: string
@@ -64,7 +61,15 @@ const SignInPage = () => {
     });
   }
 
-  const showNoAccessMessage = searchParams.get('message') === 'noaccess'
+  const errorMessageMap = {
+    noaccess: 'Авторизуйтесь',
+    wrong_credentials: 'Невірні логін чи пароль',
+    access_denied: 'Ваш акаунт неактивний',
+    server_error: 'помилка серверу'
+  }
+
+  const errorMessage = errorMessageMap[searchParams.get('message') as keyof typeof errorMessageMap]
+  const showSignInError = searchParams.has('error')
 
   return (
     <Container component="main" maxWidth="xs">
@@ -77,7 +82,8 @@ const SignInPage = () => {
           }}
         >
           <Image src='logo_vertical.svg' alt='logo' width='240' height='360' />
-          {showNoAccessMessage && <Typography component="h6" variant="h6">Авторизуйтесь</Typography>}
+          {!!errorMessage && <Typography component="h6" variant="h6" color='red'>{errorMessage}</Typography>}
+          {showSignInError && <Typography component="h6" variant="h6" color='red'>Помилка аутентифікації</Typography>}
             <Box id='courseForm' component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -86,7 +92,7 @@ const SignInPage = () => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <TextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Електронна пошта"
                         error={!!errors.email}
@@ -103,7 +109,7 @@ const SignInPage = () => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <PasswordTextField
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         error={!!errors.password}
                         helperText={errors.password?.message}

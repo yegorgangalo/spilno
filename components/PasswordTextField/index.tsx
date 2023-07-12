@@ -11,7 +11,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 interface PasswordTextFieldProps {
   label?: string
   value: string
-  onChange: (password: string ) => void
+  onChange: (event: ChangeEvent<HTMLInputElement> ) => void
   helperText?: string
   error?: boolean
   fullWidth?: boolean
@@ -20,10 +20,6 @@ interface PasswordTextFieldProps {
 
 const PasswordTextField: FC<PasswordTextFieldProps> = ({ value, onChange, helperText = 'Вкажіть коректний пароль', error, label = 'Пароль', fullWidth, required }) => {
   const [showPassword, setShowPassword] = useState(false)
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.value)
-  }
 
   const handleClickShowPassword = () => {
     setShowPassword(state => !state)
@@ -41,7 +37,7 @@ const PasswordTextField: FC<PasswordTextFieldProps> = ({ value, onChange, helper
       id="outlined-adornment-password"
       type={showPassword ? 'text' : 'password'}
       value={value}
-      onChange={handleChange}
+      onChange={onChange}
       endAdornment={
         <InputAdornment position="end">
           <IconButton

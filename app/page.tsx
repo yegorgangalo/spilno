@@ -22,7 +22,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { parsePhoneNumber } from 'libphonenumber-js'
-import { isEmptyObject } from '@/app/frontend-services/helpers'
+import { isEmptyObject, getEventWithTrimTargetValue } from '@/app/frontend-services/helpers'
 import { isValidPhone } from '@/app/frontend-services/validation'
 import { GENDER, MESSENGER } from '@/app/frontend-services/enums'
 import { genderList, messengerList } from '@/app/frontend-services/data'
@@ -145,7 +145,7 @@ export default function SignUp() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
-                      onChange={onChange}
+                      onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                       value={value!}
                       label="Ім'я"
                       error={!!errors.parentFirstName}
@@ -163,7 +163,7 @@ export default function SignUp() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
-                      onChange={onChange}
+                      onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                       value={value!}
                       label="Прізвище"
                       error={!!errors.parentLastName}
@@ -180,7 +180,7 @@ export default function SignUp() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
-                      onChange={onChange}
+                      onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                       value={value!}
                       label="Телефон"
                       error={!!errors.parentPhone}
@@ -200,7 +200,7 @@ export default function SignUp() {
                       <TextField
                         onFocus={() => setIsOpenToolTip(true)}
                         onBlur={() => setIsOpenToolTip(false)}
-                        onChange={onChange}
+                        onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                         value={value!}
                         label="Електронна пошта"
                         error={!!errors.parentEmail}
@@ -236,7 +236,7 @@ export default function SignUp() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
-                      onChange={onChange}
+                      onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                       value={value!}
                       label="Ім'я"
                       error={!!errors.childFirstName}
@@ -253,7 +253,7 @@ export default function SignUp() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
-                      onChange={onChange}
+                      onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                       value={value!}
                       label="Прізвище"
                       error={!!errors.childLastName}
@@ -270,7 +270,7 @@ export default function SignUp() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
-                      onChange={onChange}
+                      onChange={(e) => onChange(getEventWithTrimTargetValue(e as React.ChangeEvent<HTMLInputElement>))}
                       value={value!}
                       label="Місто"
                       error={!!errors.childCity}

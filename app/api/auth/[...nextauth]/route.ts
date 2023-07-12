@@ -1,6 +1,12 @@
+import { ROLE } from '@/services/const'
 import NextAuth from 'next-auth'
 import type { AuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+
+interface SpilnoUser extends User {
+  role: ROLE
+  error?: { message: string }
+}
 
 const authConfig: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -16,9 +22,7 @@ const authConfig: AuthOptions = {
           return null
         }
         console.log('authConfig req.headers?.origin=', req.headers?.origin);
-        console.log('authConfig process.env.BASE_URL=', process.env.BASE_URL);
         try {
-          // const res = await fetch(`${process.env.BASE_URL}/api/signin`, {
           const res = await fetch(`${req.headers?.origin}/api/signin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -28,13 +32,15 @@ const authConfig: AuthOptions = {
             }),
           })
 
-          const { data: user } = await res.json()
+          const { data: user, error } = await res.json()
           console.log('authConfig user=', user);
 
-          return user as User || null
+          return user as SpilnoUser || { error }
+          // return user as User || null
         } catch (error) {
           console.log('!* authConfig Credentials provider authorize error', error)
-          return null
+          return { error: { message: 'server_error' } } as SpilnoUser
+          // return null
         }
 
       }

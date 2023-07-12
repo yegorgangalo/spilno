@@ -45,3 +45,8 @@ export const getCurrentTimeRoundedUpToTensMinutes = () => {
   currentTime.setMinutes(roundedMinutes)
   return currentTime
 }
+
+export const getEventWithTrimTargetValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+  event.target.value = event.target.value.trim()
+  return event
+}
