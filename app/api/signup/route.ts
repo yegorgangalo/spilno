@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
     const html = `<div>
                     <p>Вітаємо. Ваш QR-code для ${body.childFirstName} ${body.childLastName}:</p>
                     <div>
-                      <img src="${QrCodeImageUrl}" width="512" height="512">
+                      <img src="${QrCodeImageUrl}" width="400" height="400">
                     </div>
                     <div>
                       <img src="${process.env.BASE_URL}/logo.png" alt='logo' width="202" height="124">
