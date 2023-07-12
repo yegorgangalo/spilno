@@ -45,7 +45,6 @@ const SignInPage = () => {
   })
 
   React.useEffect(() => {
-    console.log('session?.user=', session?.user);
     if (session?.user && !searchParams.has('message')) {
       router.push(session?.user.role === ROLE.ADMIN ? '/admin' : '/manage/child-course')
     }
@@ -57,13 +56,12 @@ const SignInPage = () => {
       return
     }
 
-    const signinResult = await signIn("credentials", {
+    await signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: true,
       callbackUrl
     });
-    console.log('signinResult=', signinResult);
   }
 
   const showNoAccessMessage = searchParams.get('message') === 'noaccess'
