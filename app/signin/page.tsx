@@ -35,7 +35,7 @@ const SignInPage = () => {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/manage/child-course'
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<ISigninManagerData>({
+  const { control, handleSubmit, formState: { errors } } = useForm<ISigninManagerData>({
     defaultValues: {
       email: '',
       password: '',
@@ -44,8 +44,12 @@ const SignInPage = () => {
   })
 
   React.useEffect(() => {
+    console.log('session?.user=', session?.user);
+    console.log("searchParams.has('message')=", searchParams.has('message'));
     if (session?.user && !searchParams.has('message')) {
-      router.push('/manage/child-course')
+      console.log('router.push try work');
+
+      // router.push('/manage/child-course')
     }
   }, [router, searchParams, session])
 
