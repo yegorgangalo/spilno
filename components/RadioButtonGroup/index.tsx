@@ -39,7 +39,7 @@ const RadioButtonGroup = ({ label, buttons, value, onChange }: IRadioButtonGroup
           color="primary"
           value={value}
           exclusive
-          size='large'
+          // size='large'
           onChange={handleChange}
           aria-label="Messenger"
           fullWidth
