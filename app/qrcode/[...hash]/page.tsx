@@ -1,5 +1,5 @@
 'use client'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { QRCodeCanvas } from 'qrcode.react'
 import { decode } from 'js-base64'
 import Box from '@mui/material/Box'
@@ -37,7 +37,7 @@ const QrCode = (props: QrCodeProps) => {
                 <Typography component="h1" variant="h5">{`${firstName} ${lastName}`}</Typography>
                 <Card sx={{ marginTop: 2, marginBottom: 2 }}>
                   <CardContent>
-                    <QRCodeCanvas value={manageChildCourseUrl} size={400} />
+                    <QRCodeCanvas value={manageChildCourseUrl} size={300} />
                   </CardContent>
                 </Card>
                 {/* <Link href={`/manage/child-course/${encodedData}`}>manage/child-course/</Link> */}
